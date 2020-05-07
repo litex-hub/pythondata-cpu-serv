@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.0.post67"
-version_tuple = (1, 0, 67)
+version_str = "1.0.post69"
+version_tuple = (1, 0, 69)
 try:
     from packaging.version import Version as V
-    pversion = V("1.0.post67")
+    pversion = V("1.0.post69")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.0.post16"
-data_version_tuple = (1, 0, 16)
+data_version_str = "1.0.post18"
+data_version_tuple = (1, 0, 18)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.0.post16")
+    pdata_version = V("1.0.post18")
 except ImportError:
     pass
-data_git_hash = "c0fc72b3535c6525ad93653d327080d9c85e9a8e"
-data_git_describe = "v1.0-16-gc0fc72b"
+data_git_hash = "95c5c027a1bb52054df4daa8f3fa3106e0294b33"
+data_git_describe = "v1.0-18-g95c5c02"
 data_git_msg = """\
-commit c0fc72b3535c6525ad93653d327080d9c85e9a8e
-Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Mon Apr 27 13:58:32 2020 +0200
+commit 95c5c027a1bb52054df4daa8f3fa3106e0294b33
+Author: Gwenhael Goavec-Merou <gwenhael.goavec-merou@trabucayre.com>
+Date:   Wed May 6 20:10:13 2020 +0200
 
-    Add upduino2 servant target
+    Add Saanlima pipistrello spartan6 LX45
 
 """
 
