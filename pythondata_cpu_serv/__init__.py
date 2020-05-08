@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.0.post69"
-version_tuple = (1, 0, 69)
+version_str = "1.0.post70"
+version_tuple = (1, 0, 70)
 try:
     from packaging.version import Version as V
-    pversion = V("1.0.post69")
+    pversion = V("1.0.post70")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.0.post18"
-data_version_tuple = (1, 0, 18)
+data_version_str = "1.0.post19"
+data_version_tuple = (1, 0, 19)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.0.post18")
+    pdata_version = V("1.0.post19")
 except ImportError:
     pass
-data_git_hash = "95c5c027a1bb52054df4daa8f3fa3106e0294b33"
-data_git_describe = "v1.0-18-g95c5c02"
+data_git_hash = "794748dac4d318643e6b360b08d83a332cc6b7fd"
+data_git_describe = "v1.0-19-g794748d"
 data_git_msg = """\
-commit 95c5c027a1bb52054df4daa8f3fa3106e0294b33
-Author: Gwenhael Goavec-Merou <gwenhael.goavec-merou@trabucayre.com>
-Date:   Wed May 6 20:10:13 2020 +0200
+commit 794748dac4d318643e6b360b08d83a332cc6b7fd
+Author: Olof Kindgren <olof.kindgren@gmail.com>
+Date:   Wed May 6 20:51:55 2020 +0200
 
-    Add Saanlima pipistrello spartan6 LX45
+    Add support for LX9 Microboard
 
 """
 
