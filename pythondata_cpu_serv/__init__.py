@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.0.post70"
-version_tuple = (1, 0, 70)
+version_str = "1.0.post72"
+version_tuple = (1, 0, 72)
 try:
     from packaging.version import Version as V
-    pversion = V("1.0.post70")
+    pversion = V("1.0.post72")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.0.post19"
-data_version_tuple = (1, 0, 19)
+data_version_str = "1.0.post21"
+data_version_tuple = (1, 0, 21)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.0.post19")
+    pdata_version = V("1.0.post21")
 except ImportError:
     pass
-data_git_hash = "794748dac4d318643e6b360b08d83a332cc6b7fd"
-data_git_describe = "v1.0-19-g794748d"
+data_git_hash = "40b018af6667b54e5c4f05d4844148f4c04e09e7"
+data_git_describe = "v1.0-21-g40b018a"
 data_git_msg = """\
-commit 794748dac4d318643e6b360b08d83a332cc6b7fd
+commit 40b018af6667b54e5c4f05d4844148f4c04e09e7
 Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Wed May 6 20:51:55 2020 +0200
+Date:   Fri May 8 22:56:31 2020 +0200
 
-    Add support for LX9 Microboard
+    Align RISC-V compliance test target code with upstream changes
 
 """
 
