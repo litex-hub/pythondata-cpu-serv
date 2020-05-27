@@ -1,13 +1,12 @@
 CAPI=2:
 
-name : ::serv:1.0.1
+name : ::serv:1.0.2
 
 filesets:
   core:
     files:
       - rtl/serv_params.vh : {is_include_file : true}
-      - rtl/shift_reg.v
-      - rtl/ser_shift.v
+      - rtl/serv_shift.v
       - rtl/serv_bufreg.v
       - rtl/serv_alu.v
       - rtl/serv_csr.v
