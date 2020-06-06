@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.0.post78"
-version_tuple = (1, 0, 78)
+version_str = "1.0.post79"
+version_tuple = (1, 0, 79)
 try:
     from packaging.version import Version as V
-    pversion = V("1.0.post78")
+    pversion = V("1.0.post79")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.0.post25"
-data_version_tuple = (1, 0, 25)
+data_version_str = "1.0.post26"
+data_version_tuple = (1, 0, 26)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.0.post25")
+    pdata_version = V("1.0.post26")
 except ImportError:
     pass
-data_git_hash = "acbedbe9c4bbff4bb0d2cdda725a95f2e1c42adc"
-data_git_describe = "v1.0-25-gacbedbe"
+data_git_hash = "a742002707de46a685d94b788a26b684542a69a7"
+data_git_describe = "v1.0-26-ga742002"
 data_git_msg = """\
-commit acbedbe9c4bbff4bb0d2cdda725a95f2e1c42adc
+commit a742002707de46a685d94b788a26b684542a69a7
 Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Tue May 26 22:52:09 2020 +0200
+Date:   Fri Jun 5 15:30:51 2020 +0200
 
-    Prepare for release
+    Add links to movies
 
 """
 
