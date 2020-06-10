@@ -17,7 +17,7 @@ Python module containing verilog files for serv cpu.""",
     url="https://github.com/litex-hub/pythondata-cpu-serv",
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: ISC License",
+        "License :: OSI Approved :: ISC License (ISCL)",
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.5',
