@@ -61,7 +61,10 @@ module serv_top
    wire [4:0]    rs1_addr;
    wire [4:0]    rs2_addr;
 
-   wire 	 take_branch;
+   wire [3:0] 	 immdec_ctrl;
+
+   wire 	 bne_or_bge;
+   wire 	 cond_branch;
    wire 	 e_op;
    wire 	 ebreak;
    wire 	 branch_op;
@@ -107,7 +110,7 @@ module serv_top
    wire          alu_sub;
    wire [1:0] 	 alu_bool_op;
    wire          alu_cmp_eq;
-   wire          alu_cmp_uns;
+   wire          alu_cmp_sig;
    wire          alu_cmp;
    wire          alu_shamt_en;
    wire          alu_sh_signed;
@@ -140,7 +143,7 @@ module serv_top
    wire 	 csr_en;
    wire [1:0] 	 csr_addr;
    wire 	 csr_pc;
-
+   wire 	csr_imm_en;
 
    wire 	 new_irq;
    wire 	 trap_taken;
@@ -163,7 +166,9 @@ module serv_top
       .o_rf_wreq      (o_rf_wreq),
       .i_rf_ready     (i_rf_ready),
       .o_rf_rd_en     (rd_en),
-      .i_take_branch  (take_branch),
+      .i_bne_or_bge   (bne_or_bge),
+      .i_cond_branch  (cond_branch),
+      .i_alu_cmp      (alu_cmp),
       .i_branch_op    (branch_op),
       .i_mem_op       (mem_op),
       .i_shift_op     (shift_op),
@@ -197,13 +202,11 @@ module serv_top
      (
       .clk (clk),
       //Input
-      .i_cnt_en           (cnt_en),
-      .i_cnt_done         (cnt_done),
       .i_wb_rdt           (i_ibus_rdt[31:2]),
       .i_wb_en            (o_ibus_cyc & i_ibus_ack),
-      .i_alu_cmp          (alu_cmp),
       //To state
-      .o_take_branch      (take_branch),
+      .o_bne_or_bge       (bne_or_bge),
+      .o_cond_branch      (cond_branch),
       .o_e_op             (e_op),
       .o_ebreak           (ebreak),
       .o_branch_op        (branch_op),
@@ -226,14 +229,10 @@ module serv_top
       .o_alu_sub          (alu_sub),
       .o_alu_bool_op      (alu_bool_op),
       .o_alu_cmp_eq       (alu_cmp_eq),
-      .o_alu_cmp_uns      (alu_cmp_uns),
+      .o_alu_cmp_sig      (alu_cmp_sig),
       .o_alu_sh_signed    (alu_sh_signed),
       .o_alu_sh_right     (alu_sh_right),
       .o_alu_rd_sel       (alu_rd_sel),
-      //To RF
-      .o_rf_rd_addr       (rd_addr),
-      .o_rf_rs1_addr      (rs1_addr),
-      .o_rf_rs2_addr      (rs2_addr),
       //To mem IF
       .o_mem_cmd          (o_dbus_we),
       .o_mem_signed       (mem_signed),
@@ -247,11 +246,27 @@ module serv_top
       .o_csr_mcause_en    (csr_mcause_en),
       .o_csr_source       (csr_source),
       .o_csr_d_sel        (csr_d_sel),
-      .o_csr_imm          (csr_imm),
+      .o_csr_imm_en       (csr_imm_en),
       //To top
-      .o_imm              (imm),
+      .o_immdec_ctrl      (immdec_ctrl),
       .o_rd_csr_en        (rd_csr_en),
       .o_rd_alu_en        (rd_alu_en));
+
+   serv_immdec immdec
+     (
+      .i_clk      (clk),
+      .i_cnt_en   (cnt_en),
+      .i_csr_imm_en (csr_imm_en),
+      .o_csr_imm  (csr_imm),
+      .i_wb_rdt   (i_ibus_rdt[31:2]),
+      .i_wb_en    (o_ibus_cyc & i_ibus_ack),
+      .i_ctrl     (immdec_ctrl),
+      .i_cnt_done (cnt_done),
+      //To RF
+      .o_rf_rd_addr       (rd_addr),
+      .o_rf_rs1_addr      (rs1_addr),
+      .o_rf_rs2_addr      (rs2_addr),
+      .o_imm      (imm));
 
    serv_bufreg bufreg
      (
@@ -304,6 +319,7 @@ module serv_top
      (
       .clk        (clk),
       .i_rst      (i_rst),
+      .i_shift_op (shift_op),
       .i_en       (cnt_en),
       .i_cnt0     (cnt0),
       .i_rs1      (rs1),
@@ -316,7 +332,7 @@ module serv_top
       .i_sub      (alu_sub),
       .i_bool_op  (alu_bool_op),
       .i_cmp_eq   (alu_cmp_eq),
-      .i_cmp_uns  (alu_cmp_uns),
+      .i_cmp_sig  (alu_cmp_sig),
       .o_cmp      (alu_cmp),
       .i_shamt_en (alu_shamt_en),
       .i_sh_right (alu_sh_right),
@@ -403,7 +419,6 @@ module serv_top
 	    .i_clk        (clk),
 	    .i_en         (cnt_en),
 	    .i_cnt0to3    (cnt0to3),
-	    .i_cnt2       (cnt2),
 	    .i_cnt3       (cnt3),
 	    .i_cnt7       (cnt7),
 	    .i_cnt_done   (cnt_done),
@@ -446,10 +461,10 @@ module serv_top
         rvfi_rd_wdata <= {o_wdata0,rvfi_rd_wdata[31:1]};
       if (cnt_done & ctrl_pc_en) begin
          rvfi_pc_rdata <= pc;
-	 if (!rd_en)
+	 if (!(rd_en & (|rd_addr))) begin
 	   rvfi_rd_addr <= 5'd0;
-	 if (!rd_en | !(|rd_addr))
 	   rvfi_rd_wdata <= 32'd0;
+	 end
       end
       rvfi_trap <= trap;
       if (rvfi_valid) begin

@@ -4,7 +4,6 @@ module serv_csr
    input wire 	    i_clk,
    input wire 	    i_en,
    input wire 	    i_cnt0to3,
-   input wire 	    i_cnt2,
    input wire 	    i_cnt3,
    input wire 	    i_cnt7,
    input wire 	    i_cnt_done,
@@ -29,9 +28,12 @@ module serv_csr
    input wire 	    i_d,
    output wire 	    o_q);
 
-`include "serv_params.vh"
+   localparam [1:0]
+     CSR_SOURCE_CSR = 2'b00,
+     CSR_SOURCE_EXT = 2'b01,
+     CSR_SOURCE_SET = 2'b10,
+     CSR_SOURCE_CLR = 2'b11;
 
-   reg 		    mstatus;
    reg 		    mstatus_mie;
    reg 		    mstatus_mpie;
    reg 		    mie_mtie;
@@ -51,7 +53,7 @@ module serv_csr
 		   (i_csr_source == CSR_SOURCE_CSR) ? csr_out :
 		   1'bx;
 
-   assign csr_out = (i_mstatus_en & i_en & mstatus) |
+   assign csr_out = (i_mstatus_en & mstatus_mie & i_cnt3) |
 		    i_rf_csr_out |
 		    (i_mcause_en & i_en & mcause);
 
@@ -69,40 +71,56 @@ module serv_csr
 
 
    always @(posedge i_clk) begin
+      if (i_mie_en & i_cnt7)
+	mie_mtie <= csr_in;
+
+      timer_irq_r <= timer_irq;
+
+      /*
+       The mie bit in mstatus gets updated under three conditions
+
+       When a trap is taken, the bit is cleared
+       During an mret instruction, the bit is restored from mpie
+       During a mstatus CSR access instruction it's assigned when
+        bit 3 gets updated
+
+       These conditions are all mutually exclusibe
+       */
+      if (i_trap_taken | i_mstatus_en & i_cnt3 | i_mret)
+	mstatus_mie <= !i_trap_taken & (i_mret ?  mstatus_mpie : csr_in);
+
       /*
        Note: To save resources mstatus_mpie (mstatus bit 7) is not
        readable or writable from sw
        */
-      if (i_mstatus_en & i_cnt3)
-	mstatus_mie <= csr_in;
+      if (i_trap_taken)
+	mstatus_mpie <= mstatus_mie;
 
-      if (i_mie_en & i_cnt7)
-	mie_mtie <= csr_in;
+      /*
+       The four lowest bits in mcause hold the exception code
 
-      mstatus <= i_cnt2 & mstatus_mie;
+       These bits get updated under three conditions
 
-      timer_irq_r <= timer_irq;
+       During an mcause CSR access function, they are assigned when
+       bits 0 to 3 gets updated
 
-      if (i_mret) begin
-	 mstatus_mie <= mstatus_mpie;
-      end
+       During an external interrupt the exception code is set to
+       7, since SERV only support timer interrupts
 
-      if (i_trap_taken) begin
-	 mstatus_mpie <= mstatus_mie;
-	 mstatus_mie <= 1'b0;
-	 mcause31  <= i_pending_irq;
-	 mcause3_0 <= i_pending_irq ? 4'd7 :
-		      i_e_op ? {!i_ebreak, 3'b011} :
-		      i_mem_misalign ? {2'b01, i_mem_cmd, 1'b0} :
-		      4'd0;
-      end
+       During an exception, the exception code is assigned to indicate
+       if it was caused by an ebreak instruction (3),
+       ecall instruction (11), misaligned load (4), misaligned store (6)
+       or misaligned jump (0)
+       */
+      if (i_mcause_en & i_en & i_cnt0to3 | i_trap_taken)
+	mcause3_0 <= !i_trap_taken ? {csr_in, mcause3_0[3:1]} :
+		     i_pending_irq ? 4'd7 :
+		     i_e_op ? {!i_ebreak, 3'b011} :
+		     i_mem_misalign ? {2'b01, i_mem_cmd, 1'b0} :
+		     4'd0;
 
-      if (i_mcause_en & i_en) begin
-	 if (i_cnt0to3)
-	   mcause3_0 <= {csr_in, mcause3_0[3:1]};
-	 if (i_cnt_done)
-	   mcause31 <= csr_in;
-      end
+      if (i_mcause_en & i_cnt_done | i_trap_taken)
+	mcause31 <= i_trap_taken ? i_pending_irq : csr_in;
    end
 
 endmodule

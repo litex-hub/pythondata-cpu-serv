@@ -43,9 +43,18 @@ filesets:
       - servant/servclone10_clock_gen.v : {file_type : verilogSource}
       - servant/servclone10.v : {file_type : verilogSource}
 
+  de0_nano:
+    files:
+      - data/de0_nano.sdc : {file_type : SDC}
+      - data/de0_nano.tcl : {file_type : tclSource}
+      - servant/servive_clock_gen.v : {file_type : verilogSource}
+      - servant/servive.v : {file_type : verilogSource}
+
   tinyfpga_bx: {files: [data/tinyfpga_bx.pcf : {file_type : PCF}]}
   icebreaker : {files: [data/icebreaker.pcf  : {file_type : PCF}]}
+  icesugar   : {files: [data/icesugar.pcf : {file_type : PCF}]}
   alhambra   : {files: [data/alhambra.pcf : {file_type : PCF}]}
+  icestick : {files: [data/icestick.pcf  : {file_type : PCF}]}
 
   lx9_microboard:
     files:
@@ -63,6 +72,17 @@ filesets:
       - servant/servix_clock_gen.v : {file_type : verilogSource}
       - servant/servix.v : {file_type : verilogSource}
       - data/arty_a7_35t.xdc : {file_type : xdc}
+
+  ac701:
+    files:
+      - servant/servix.v : {file_type : verilogSource}
+      - servant/servant_ac701.v : {file_type : verilogSource}
+      - data/ac701.xdc : {file_type : xdc}
+
+  orangecrab:
+    files:
+      - data/orangecrab_r02.lpf : {file_type : LPF}
+      - servant/servant_orangecrab.v : {file_type : verilogSource}
 
   pipistrello:
     files:
@@ -103,6 +123,16 @@ targets:
         device : 10CL025YU256C8G
     toplevel : servclone10
 
+  de0_nano:
+    default_tool : quartus
+    filesets : [mem_files, soc, de0_nano]
+    parameters : [memfile, memsize]
+    tools:
+      quartus:
+        family : Cyclone IV E
+        device : EP4CE22F17C6
+    toplevel: servive
+
   icebreaker:
     default_tool : icestorm
     filesets : [mem_files, soc, service, icebreaker]
@@ -111,6 +141,18 @@ targets:
     tools:
       icestorm:
         nextpnr_options: [--up5k, --freq, 16]
+        pnr: next
+    toplevel : service
+
+  icesugar:
+    default_tool : icestorm
+    description : iCE40UP5K Development Board by MuseLab
+    filesets : [mem_files, soc, service, icesugar]
+    generate: [icesugar_pll]
+    parameters : [memfile, memsize, PLL=ICE40_PAD]
+    tools:
+      icestorm:
+        nextpnr_options: [--up5k, --package, sg48, --freq, 32]
         pnr: next
     toplevel : service
 
@@ -126,7 +168,6 @@ targets:
         package : csg324
         speed   : -2
     toplevel : servant_lx9
-
 
   tinyfpga_bx:
     default_tool : icestorm
@@ -174,6 +215,24 @@ targets:
     tools:
       vivado: {part : xc7a35ticsg324-1L}
     toplevel : servix
+
+  ac701:
+    default_tool: vivado
+    filesets : [mem_files, soc, ac701]
+    parameters : [memfile, memsize, frequency=32]
+    tools:
+      vivado: {part : xc7a200t-fbg676-2}
+    toplevel : servant_ac701
+
+  orangecrab_r0.2:
+    default_tool: trellis
+    description : OrangeCrab R0.2
+    filesets : [mem_files, soc, orangecrab]
+    parameters : [memfile, memsize]
+    tools:
+      trellis:
+        nextpnr_options : [--package, CSFBGA285, --25k]
+    toplevel: servant_orangecrab
 
   pipistrello:
     default_tool: ise
@@ -246,6 +305,17 @@ targets:
       vivado: {part : xczu7ev-ffvc1156-2-e}
     toplevel : servus
 
+  icestick:
+    default_tool : icestorm
+    filesets : [mem_files, soc, service, icestick]
+    generate: [icestick_pll]
+    parameters : [memfile=blinky.hex, memsize=7168, PLL=ICE40_CORE]
+    tools:
+      icestorm:
+        nextpnr_options : [--hx1k, --package, tq144, --freq, 32]
+        pnr: next
+    toplevel : service
+
 parameters:
   PLL:
     datatype : str
@@ -308,6 +378,12 @@ generate:
     parameters:
       freq_out : 16
 
+  icesugar_pll:
+    generator: icepll
+    parameters:
+      freq_in  : 12
+      freq_out : 32
+
   tinyfpga_bx_pll:
     generator: icepll
     parameters:
@@ -315,6 +391,12 @@ generate:
       freq_out : 32
 
   alhambra_pll:
+    generator: icepll
+    parameters:
+      freq_in  : 12
+      freq_out : 32
+
+  icestick_pll:
     generator: icepll
     parameters:
       freq_in  : 12

@@ -3,13 +3,11 @@ module serv_decode
   (
    input wire 	     clk,
    //Input
-   input wire 	     i_cnt_en,
-   input wire 	     i_cnt_done,
    input wire [31:2] i_wb_rdt,
    input wire 	     i_wb_en,
-   input wire 	     i_alu_cmp,
    //To state
-   output wire 	     o_take_branch,
+   output wire 	     o_bne_or_bge,
+   output wire 	     o_cond_branch,
    output wire 	     o_e_op,
    output wire 	     o_ebreak,
    output wire 	     o_branch_op,
@@ -31,14 +29,10 @@ module serv_decode
    output wire 	     o_alu_sub,
    output wire [1:0] o_alu_bool_op,
    output wire 	     o_alu_cmp_eq,
-   output wire 	     o_alu_cmp_uns,
+   output wire 	     o_alu_cmp_sig,
    output wire 	     o_alu_sh_signed,
    output wire 	     o_alu_sh_right,
-   output wire [3:0]  o_alu_rd_sel,
-   //To RF
-   output reg [4:0]  o_rf_rd_addr,
-   output reg [4:0]  o_rf_rs1_addr,
-   output reg [4:0]  o_rf_rs2_addr,
+   output wire [3:0] o_alu_rd_sel,
    //To mem IF
    output wire 	     o_mem_signed,
    output wire 	     o_mem_word,
@@ -52,9 +46,9 @@ module serv_decode
    output wire 	     o_csr_mcause_en,
    output wire [1:0] o_csr_source,
    output wire 	     o_csr_d_sel,
-   output wire 	     o_csr_imm,
+   output wire 	     o_csr_imm_en,
    //To top
-   output wire 	     o_imm,
+   output wire [3:0] o_immdec_ctrl,
    output wire 	     o_op_b_source,
    output wire 	     o_rd_csr_en,
    output wire 	     o_rd_alu_en);
@@ -98,13 +92,8 @@ module serv_decode
    //False for JALR/LOAD/STORE/OP/OPIMM?
    assign o_bufreg_clr_lsb = opcode[4] & ((opcode[1:0] == 2'b00) | (opcode[1:0] == 2'b11));
 
-   //Take branch for jump or branch instructions (opcode == 1x0xx) if
-   //a) It's an unconditional branch (opcode[0] == 1)
-   //b) It's a conditional branch (opcode[0] == 0) of type beq,blt,bltu (funct3[0] == 0) and ALU compare is true
-   //c) It's a conditional branch (opcode[0] == 0) of type bne,bge,bgeu (funct3[0] == 1) and ALU compare is false
-   //Only valid during the last cycle of INIT, when the branch condition has
-   //been calculated.
-   assign o_take_branch = opcode[4] & !opcode[2] & (opcode[0] | (i_alu_cmp^funct3[0]));
+   assign o_bne_or_bge = funct3[0];
+   assign o_cond_branch = !opcode[0];
 
    assign o_ctrl_utype       = !opcode[4] & opcode[2] & opcode[0];
    assign o_ctrl_jal_or_jalr = opcode[4] & opcode[0];
@@ -122,9 +111,12 @@ module serv_decode
    //False for STORE, BRANCH, MISC-MEM
    assign o_rd_op = (opcode[2] |
 		     (!opcode[2] & opcode[4] & opcode[0]) |
-		     (!opcode[2] & !opcode[3] & !opcode[0])) & (|o_rf_rd_addr);
+		     (!opcode[2] & !opcode[3] & !opcode[0]));
 
-   assign o_alu_sub = opcode[3] & imm30/*alu_sub_r*/;
+   //True for sub, sll*, b*, slt*
+   //False for add*, sr*
+   assign o_alu_sub = (!funct3[2] & (funct3[0] | (opcode[3] & imm30))) | funct3[1] | opcode[4];
+
 
    /*
     300 0_000 mstatus RWSC
@@ -152,7 +144,7 @@ module serv_decode
 
    assign o_csr_source = funct3[1:0];
    assign o_csr_d_sel = funct3[2];
-   assign o_csr_imm = o_rf_rs1_addr[0];
+   assign o_csr_imm_en = csr_op & o_csr_d_sel;
 
    assign o_csr_addr = (op26 & !op20) ? CSR_MSCRATCH :
 		       (op26 & !op21) ? CSR_MEPC :
@@ -161,7 +153,7 @@ module serv_decode
 
    assign o_alu_cmp_eq = funct3[2:1] == 2'b00;
 
-   assign o_alu_cmp_uns = (funct3[0] & funct3[1]) | (funct3[1] & funct3[2]);
+   assign o_alu_cmp_sig = ~((funct3[0] & funct3[1]) | (funct3[1] & funct3[2]));
    assign o_alu_sh_signed = imm30;
    assign o_alu_sh_right = funct3[2];
 
@@ -172,20 +164,14 @@ module serv_decode
 
    assign o_alu_bool_op = funct3[1:0];
 
-   reg 	      signbit;
-
-   reg [8:0]  imm19_12_20;
-   reg 	      imm7;
-   reg [5:0]  imm30_25;
-   reg [4:0]  imm24_20;
-   reg [4:0]  imm11_7;
-
-   wire [1:0] m2;
+   //True for S (STORE) or B (BRANCH) type instructions
+   //False for J type instructions
+   assign o_immdec_ctrl[0] = opcode[3:0] == 4'b1000;
    //True for OP-IMM, LOAD, STORE, JALR
    //False for LUI, AUIPC, JAL
-   assign m2[0] = (opcode[1:0] == 2'b00) | (opcode[2:1] == 2'b00);
-   assign m2[1] = opcode[4] & !opcode[0];
-   wire m3 = opcode[4];
+   assign o_immdec_ctrl[1] = (opcode[1:0] == 2'b00) | (opcode[2:1] == 2'b00);
+   assign o_immdec_ctrl[2] = opcode[4] & !opcode[0];
+   assign o_immdec_ctrl[3] = opcode[4];
 
    assign o_alu_rd_sel[0] = (funct3 == 3'b000); // Add/sub
    assign o_alu_rd_sel[1] = (funct3[1:0] == 2'b01); //Shift
@@ -193,9 +179,6 @@ module serv_decode
    assign o_alu_rd_sel[3] = (funct3[2] & !(funct3[1:0] == 2'b01)); //Bool
    always @(posedge clk) begin
       if (i_wb_en) begin
-         o_rf_rd_addr  <= i_wb_rdt[11:7];
-         o_rf_rs1_addr <= i_wb_rdt[19:15];
-         o_rf_rs2_addr <= i_wb_rdt[24:20];
          funct3        <= i_wb_rdt[14:12];
          imm30         <= i_wb_rdt[30];
          opcode        <= i_wb_rdt[6:2];
@@ -203,31 +186,8 @@ module serv_decode
 	 op21 <= i_wb_rdt[21];
 	 op22 <= i_wb_rdt[22];
 	 op26 <= i_wb_rdt[26];
-
-	 //Immediate decoder
-	 signbit     <= i_wb_rdt[31];
-	 imm19_12_20 <= {i_wb_rdt[19:12],i_wb_rdt[20]};
-	 imm7        <= i_wb_rdt[7];
-	 imm30_25    <= i_wb_rdt[30:25];
-	 imm24_20    <= i_wb_rdt[24:20];
-	 imm11_7     <= i_wb_rdt[11:7];
-      end
-      if (i_cnt_en) begin
-	 imm19_12_20 <= {m3 ? signbit : imm24_20[0], imm19_12_20[8:1]};
-	 imm7        <= signbit;
-	 imm30_25    <= {m2[1] ? imm7 : m2[0] ? signbit : imm19_12_20[0], imm30_25[5:1]};
-	 imm24_20    <= {imm30_25[0], imm24_20[4:1]};
-	 imm11_7     <= {imm30_25[0], imm11_7[4:1]};
-	 if (csr_op & o_csr_d_sel)
-	   o_rf_rs1_addr <= {1'b0,o_rf_rs1_addr[4:1]};
       end
    end
-
-   //True for S (STORE) or B (BRANCH) type instructions
-   //False for J type instructions
-   wire m1 = opcode[3:0] == 4'b1000;
-
-   assign o_imm = i_cnt_done ? signbit : m1 ? imm11_7[0] : imm24_20[0];
 
    //0 (OP_B_SOURCE_IMM) when OPIMM
    //1 (OP_B_SOURCE_RS2) when BRANCH or OP

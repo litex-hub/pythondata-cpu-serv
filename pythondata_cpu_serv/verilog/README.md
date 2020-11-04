@@ -6,6 +6,8 @@ SERV is an award-winning bit-serial RISC-V core
 
 If you want to know more about SERV, what a bit-serial CPU is and what it's good for, I recommend starting out by watching the movies [introduction to SERV](https://diode.zone/videos/watch/0230a518-e207-4cf6-b5e2-69cc09411013) and the [presentation from the Zürich 2019 RISC-V workshop](https://www.youtube.com/watch?v=xjIxORBRaeQ)
 
+There's also an official [SERV user manual](https://serv.readthedocs.io/en/latest/#) with fancy block diagrams and an in-depth description of how some things work.
+
 ## Prerequisites
 
 Create a directory to keep all the different parts of the project together. We
@@ -84,7 +86,8 @@ Some targets also depend on functionality in the FuseSoC base library (fusesoc-c
 
 Now we're ready to build. Note, for all the cases below, it's possible to run with `--memfile=$SERV/sw/blinky.hex`
 (or any other suitable program) as the last argument to preload the LED blink example
-instead of hello world.
+instead of hello world. If the `--memfile` option doesn't work, try upgrading
+FuseSOC with `pip install --upgrade fusesoc`.
 
 ### TinyFPGA BX
 
@@ -101,6 +104,23 @@ Pin 9 is used for UART output with 57600 baud rate.
     cd $SERV/workspace
     fusesoc run --target=icebreaker servant
 
+### iCESugar
+
+Pin 6 is used for UART output with 115200 baud rate. Thanks to the onboard
+debugger, you can just connect the USB Type-C connector to the PC, and a
+serial console will show up.
+
+    cd $SERV/workspace
+    fusesoc run --target=icesugar servant
+
+### OrangeCrab R0.2
+
+Pin D1 is used for UART output with 115200 baud rate.
+
+    cd $SERV/workspace
+    fusesoc run --target=orangecrab_r0.2 servant
+    dfu-util -d 1209:5af0 -D build/servant_1.0.2/orangecrab_r0.2-trellis/servant_1.0.2.bit
+
 ### Arty A7 35T
 
 Pin D10 (uart_rxd_out) is used for UART output with 57600 baud rate (to use
@@ -108,6 +128,13 @@ blinky.hex change D10 to H5 (led[4]) in data/arty_a7_35t.xdc).
 
     cd $SERV/workspace
     fusesoc run --target=arty_a7_35t servant
+
+### DE0 Nano
+
+FPGA Pin D11 (Connector JP1, pin 38) is used for UART output with 57600 baud rate. DE0 Nano needs an external 3.3V UART to connect to this pin
+
+    cd $SERV/workspace
+    fusesoc run --target=de0_nano servant
 
 ### Saanlima Pipistrello (Spartan6 LX45)
 
@@ -124,6 +151,14 @@ Pin 61 is used for UART output with 115200 baud rate. This pin is connected to a
     cd $SERV/workspace
     fusesoc run --target=alhambra servant
     iceprog -d i:0x0403:0x6010:0 build/servant_1.0.1/alhambra-icestorm/servant_1.0.1.bin
+
+### iCEstick
+
+Pin 95 is used as the GPIO output which is connected to the board's green LED. Due to this board's limited Embedded BRAM, programs with a maximum of 7168 bytes can be loaded. The default program for this board is blinky.hex.
+
+    cd $SERV/workspace
+    fusesoc run --target=icestick servant
+    iceprog build/servant_1.0.2/icestick-icestorm/servant_1.0.2.bin
 
 ## Other targets
 
