@@ -4,39 +4,39 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.0.post86"
-version_tuple = (1, 0, 86)
+version_str = "1.0.post117"
+version_tuple = (1, 0, 117)
 try:
     from packaging.version import Version as V
-    pversion = V("1.0.post86")
+    pversion = V("1.0.post117")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.0.post26"
-data_version_tuple = (1, 0, 26)
+data_version_str = "1.0.post51"
+data_version_tuple = (1, 0, 51)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.0.post26")
+    pdata_version = V("1.0.post51")
 except ImportError:
     pass
-data_git_hash = "a742002707de46a685d94b788a26b684542a69a7"
-data_git_describe = "v1.0-26-ga742002"
+data_git_hash = "215099dd3d3abc55bf169f9ee592676da1722cb2"
+data_git_describe = "v1.0-51-g215099d"
 data_git_msg = """\
-commit a742002707de46a685d94b788a26b684542a69a7
-Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Fri Jun 5 15:30:51 2020 +0200
+commit 215099dd3d3abc55bf169f9ee592676da1722cb2
+Author: Qingyao Sun <sunqingyao19970825@icloud.com>
+Date:   Fri Oct 2 18:01:39 2020 +0800
 
-    Add links to movies
+    Add instructions for iCESugar to README.md
 
 """
 
 # Tool version info
-tool_version_str = "0.0.post60"
-tool_version_tuple = (0, 0, 60)
+tool_version_str = "0.0.post66"
+tool_version_tuple = (0, 0, 66)
 try:
     from packaging.version import Version as V
-    ptool_version = V("0.0.post60")
+    ptool_version = V("0.0.post66")
 except ImportError:
     pass
 
