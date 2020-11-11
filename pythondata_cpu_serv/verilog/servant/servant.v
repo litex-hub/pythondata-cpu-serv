@@ -7,6 +7,7 @@ module servant
 
    parameter memfile = "zephyr_hello.hex";
    parameter memsize = 8192;
+   parameter reset_strategy = "MINI";
    parameter sim = 0;
    parameter with_csr = 1;
 
@@ -76,7 +77,7 @@ module servant
    servant_mux #(sim) servant_mux
      (
       .i_clk (wb_clk),
-      .i_rst (wb_rst),
+      .i_rst (wb_rst & (reset_strategy != "NONE")),
       .i_wb_cpu_adr (wb_dbus_adr),
       .i_wb_cpu_dat (wb_dbus_dat),
       .i_wb_cpu_sel (wb_dbus_sel),
@@ -104,10 +105,12 @@ module servant
 
    servant_ram
      #(.memfile (memfile),
-       .depth (memsize))
+       .depth (memsize),
+       .RESET_STRATEGY (reset_strategy))
    ram
      (// Wishbone interface
       .i_wb_clk (wb_clk),
+      .i_wb_rst (wb_rst),
       .i_wb_adr (wb_mem_adr[$clog2(memsize)-1:2]),
       .i_wb_cyc (wb_mem_cyc),
       .i_wb_we  (wb_mem_we) ,
@@ -119,9 +122,11 @@ module servant
    generate
       if (with_csr) begin
 	 servant_timer
-	   #(.WIDTH (32))
+	   #(.RESET_STRATEGY (reset_strategy),
+	     .WIDTH (32))
 	 timer
 	   (.i_clk    (wb_clk),
+	    .i_rst    (wb_rst),
 	    .o_irq    (timer_irq),
 	    .i_wb_cyc (wb_timer_cyc),
 	    .i_wb_we  (wb_timer_we) ,
@@ -143,6 +148,7 @@ module servant
 
    serv_rf_top
      #(.RESET_PC (32'h0000_0000),
+       .RESET_STRATEGY (reset_strategy),
        .WITH_CSR (with_csr))
    cpu
      (

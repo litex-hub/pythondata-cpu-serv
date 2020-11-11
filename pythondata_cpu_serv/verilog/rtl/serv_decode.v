@@ -144,7 +144,7 @@ module serv_decode
 
    assign o_csr_source = funct3[1:0];
    assign o_csr_d_sel = funct3[2];
-   assign o_csr_imm_en = csr_op & o_csr_d_sel;
+   assign o_csr_imm_en = opcode[4] & opcode[2] & funct3[2];
 
    assign o_csr_addr = (op26 & !op20) ? CSR_MSCRATCH :
 		       (op26 & !op21) ? CSR_MEPC :
@@ -167,8 +167,8 @@ module serv_decode
    //True for S (STORE) or B (BRANCH) type instructions
    //False for J type instructions
    assign o_immdec_ctrl[0] = opcode[3:0] == 4'b1000;
-   //True for OP-IMM, LOAD, STORE, JALR
-   //False for LUI, AUIPC, JAL
+   //True for OP-IMM, LOAD, STORE, JALR  (I S)
+   //False for LUI, AUIPC, JAL           (U J) 
    assign o_immdec_ctrl[1] = (opcode[1:0] == 2'b00) | (opcode[2:1] == 2'b00);
    assign o_immdec_ctrl[2] = opcode[4] & !opcode[0];
    assign o_immdec_ctrl[3] = opcode[4];
