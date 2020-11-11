@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.0.post117"
-version_tuple = (1, 0, 117)
+version_str = "1.0.post126"
+version_tuple = (1, 0, 126)
 try:
     from packaging.version import Version as V
-    pversion = V("1.0.post117")
+    pversion = V("1.0.post126")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.0.post51"
-data_version_tuple = (1, 0, 51)
+data_version_str = "1.0.post60"
+data_version_tuple = (1, 0, 60)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.0.post51")
+    pdata_version = V("1.0.post60")
 except ImportError:
     pass
-data_git_hash = "215099dd3d3abc55bf169f9ee592676da1722cb2"
-data_git_describe = "v1.0-51-g215099d"
+data_git_hash = "90ce4ff1afd1ec84817f3c4284f98f1cbbed97ad"
+data_git_describe = "v1.0-60-g90ce4ff"
 data_git_msg = """\
-commit 215099dd3d3abc55bf169f9ee592676da1722cb2
-Author: Qingyao Sun <sunqingyao19970825@icloud.com>
-Date:   Fri Oct 2 18:01:39 2020 +0800
+commit 90ce4ff1afd1ec84817f3c4284f98f1cbbed97ad
+Author: Olof Kindgren <olof.kindgren@gmail.com>
+Date:   Tue Nov 10 15:13:04 2020 +0100
 
-    Add instructions for iCESugar to README.md
+    Syntax and reset fixes for ModelSim
 
 """
 
