@@ -197,6 +197,7 @@ module serv_top
       //External
       .o_dbus_cyc     (o_dbus_cyc),
       .i_dbus_ack     (i_dbus_ack),
+      .o_ibus_cyc     (o_ibus_cyc),
       .i_ibus_ack     (i_ibus_ack),
       //RF Interface
       .o_rf_rreq      (o_rf_rreq),
@@ -209,7 +210,7 @@ module serv_top
       .clk (clk),
       //Input
       .i_wb_rdt           (i_ibus_rdt[31:2]),
-      .i_wb_en            (o_ibus_cyc & i_ibus_ack),
+      .i_wb_en            (i_ibus_ack),
       //To state
       .o_bne_or_bge       (bne_or_bge),
       .o_cond_branch      (cond_branch),
@@ -265,7 +266,7 @@ module serv_top
       .i_csr_imm_en (csr_imm_en),
       .o_csr_imm  (csr_imm),
       .i_wb_rdt   (i_ibus_rdt[31:2]),
-      .i_wb_en    (o_ibus_cyc & i_ibus_ack),
+      .i_wb_en    (i_ibus_ack),
       .i_ctrl     (immdec_ctrl),
       .i_cnt_done (cnt_done),
       //To RF
@@ -306,6 +307,7 @@ module serv_top
       //State
       .i_pc_en    (ctrl_pc_en),
       .i_cnt12to31 (cnt12to31),
+      .i_cnt0     (cnt0),
       .i_cnt2     (cnt2),
       .i_cnt_done (cnt_done),
       //Control
@@ -321,10 +323,7 @@ module serv_top
       .o_rd       (ctrl_rd),
       .o_bad_pc   (bad_pc),
       //External
-      .o_ibus_adr (o_ibus_adr),
-      .o_ibus_cyc (o_ibus_cyc),
-      .i_ibus_ack (i_ibus_ack));
-
+      .o_ibus_adr (o_ibus_adr));
 
    serv_alu alu
      (
