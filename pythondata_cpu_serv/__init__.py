@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.0.post126"
-version_tuple = (1, 0, 126)
+version_str = "1.0.post129"
+version_tuple = (1, 0, 129)
 try:
     from packaging.version import Version as V
-    pversion = V("1.0.post126")
+    pversion = V("1.0.post129")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.0.post60"
-data_version_tuple = (1, 0, 60)
+data_version_str = "1.0.post63"
+data_version_tuple = (1, 0, 63)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.0.post60")
+    pdata_version = V("1.0.post63")
 except ImportError:
     pass
-data_git_hash = "90ce4ff1afd1ec84817f3c4284f98f1cbbed97ad"
-data_git_describe = "v1.0-60-g90ce4ff"
+data_git_hash = "aa16bc40b6c7db767e05f460d8992721c7a8a55d"
+data_git_describe = "v1.0-63-gaa16bc4"
 data_git_msg = """\
-commit 90ce4ff1afd1ec84817f3c4284f98f1cbbed97ad
+commit aa16bc40b6c7db767e05f460d8992721c7a8a55d
 Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Tue Nov 10 15:13:04 2020 +0100
+Date:   Wed Dec 2 15:55:45 2020 +0100
 
-    Syntax and reset fixes for ModelSim
+    Move ibus_cyc handling to serv_state
 
 """
 
