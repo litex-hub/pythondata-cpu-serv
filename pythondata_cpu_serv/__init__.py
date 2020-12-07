@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.0.post129"
-version_tuple = (1, 0, 129)
+version_str = "1.0.post135"
+version_tuple = (1, 0, 135)
 try:
     from packaging.version import Version as V
-    pversion = V("1.0.post129")
+    pversion = V("1.0.post135")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.0.post63"
-data_version_tuple = (1, 0, 63)
+data_version_str = "1.0.post69"
+data_version_tuple = (1, 0, 69)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.0.post63")
+    pdata_version = V("1.0.post69")
 except ImportError:
     pass
-data_git_hash = "aa16bc40b6c7db767e05f460d8992721c7a8a55d"
-data_git_describe = "v1.0-63-gaa16bc4"
+data_git_hash = "731ca8bb45f9182cd6d0ababcad3055a305fe298"
+data_git_describe = "v1.0-69-g731ca8b"
 data_git_msg = """\
-commit aa16bc40b6c7db767e05f460d8992721c7a8a55d
-Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Wed Dec 2 15:55:45 2020 +0100
+commit 731ca8bb45f9182cd6d0ababcad3055a305fe298
+Author: Bruno Flores <bruno@brunoflores.com.br>
+Date:   Sat Oct 24 12:04:41 2020 +0000
 
-    Move ibus_cyc handling to serv_state
+    Allow for a configurable toolchain prefix.
 
 """
 
