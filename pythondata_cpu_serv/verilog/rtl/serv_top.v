@@ -105,7 +105,6 @@ module serv_top
    wire 	 bufreg_en;
    wire 	 bufreg_rs1_en;
    wire 	 bufreg_imm_en;
-   wire 	 bufreg_loop;
    wire 	 bufreg_clr_lsb;
    wire 	 bufreg_q;
 
@@ -118,6 +117,7 @@ module serv_top
    wire          alu_sh_signed;
    wire          alu_sh_right;
    wire 	 alu_sh_done;
+   wire 	 alu_sh_done_r;
    wire [3:0]    alu_rd_sel;
 
    wire          rs1;
@@ -149,8 +149,6 @@ module serv_top
    wire 	 rf_csr_out;
 
    wire 	 new_irq;
-   wire 	 trap_taken;
-   wire 	 pending_irq;
 
    wire [1:0]   lsb;
 
@@ -163,8 +161,6 @@ module serv_top
       .i_rst          (i_rst),
       //State
       .i_new_irq      (new_irq),
-      .o_trap_taken   (trap_taken),
-      .o_pending_irq  (pending_irq),
       .i_alu_cmp      (alu_cmp),
       .o_init         (init),
       .o_cnt_en       (cnt_en),
@@ -183,6 +179,7 @@ module serv_top
       .i_ctrl_misalign(lsb[1]),
       .o_alu_shamt_en (alu_shamt_en),
       .i_alu_sh_done  (alu_sh_done),
+      .i_alu_sh_done_r (alu_sh_done_r),
       .o_mem_bytecnt  (mem_bytecnt),
       .i_mem_misalign (mem_misalign),
       //Control
@@ -191,6 +188,7 @@ module serv_top
       .i_branch_op    (branch_op),
       .i_mem_op       (mem_op),
       .i_shift_op     (shift_op),
+      .i_sh_right (alu_sh_right),
       .i_slt_op       (slt_op),
       .i_e_op         (e_op),
       .i_rd_op        (rd_op),
@@ -222,7 +220,6 @@ module serv_top
       .o_slt_op           (slt_op),
       .o_rd_op            (rd_op),
       //To bufreg
-      .o_bufreg_loop      (bufreg_loop),
       .o_bufreg_rs1_en    (bufreg_rs1_en),
       .o_bufreg_imm_en    (bufreg_imm_en),
       .o_bufreg_clr_lsb   (bufreg_clr_lsb),
@@ -261,19 +258,22 @@ module serv_top
 
    serv_immdec immdec
      (
-      .i_clk      (clk),
-      .i_cnt_en   (cnt_en),
+      .i_clk        (clk),
+      //State
+      .i_cnt_en     (cnt_en),
+      .i_cnt_done   (cnt_done),
+      //Control
       .i_csr_imm_en (csr_imm_en),
-      .o_csr_imm  (csr_imm),
-      .i_wb_rdt   (i_ibus_rdt[31:2]),
-      .i_wb_en    (i_ibus_ack),
-      .i_ctrl     (immdec_ctrl),
-      .i_cnt_done (cnt_done),
-      //To RF
-      .o_rd_addr  (rd_addr),
-      .o_rs1_addr (rs1_addr),
-      .o_rs2_addr (rs2_addr),
-      .o_imm      (imm));
+      .i_ctrl       (immdec_ctrl),
+      .o_rd_addr    (rd_addr),
+      .o_rs1_addr   (rs1_addr),
+      .o_rs2_addr   (rs2_addr),
+      //Data
+      .o_csr_imm    (csr_imm),
+      .o_imm        (imm),
+      //External
+      .i_wb_en      (i_ibus_ack),
+      .i_wb_rdt     (i_ibus_rdt[31:7]));
 
    serv_bufreg bufreg
      (
@@ -285,7 +285,7 @@ module serv_top
       .i_init   (init),
       .o_lsb    (lsb),
       //Control
-      .i_loop   (bufreg_loop),
+      .i_sh_signed (alu_sh_signed),
       .i_rs1_en (bufreg_rs1_en),
       .i_imm_en (bufreg_imm_en),
       .i_clr_lsb (bufreg_clr_lsb),
@@ -309,7 +309,6 @@ module serv_top
       .i_cnt12to31 (cnt12to31),
       .i_cnt0     (cnt0),
       .i_cnt2     (cnt2),
-      .i_cnt_done (cnt_done),
       //Control
       .i_jump     (jump),
       .i_jal_or_jalr (jal_or_jalr),
@@ -330,21 +329,18 @@ module serv_top
       .clk        (clk),
       //State
       .i_en       (cnt_en),
+      .i_init       (init),
       .i_cnt0     (cnt0),
-      .i_init     (init),
-      .i_cnt_done (cnt_done),
       .i_shamt_en (alu_shamt_en),
       .o_cmp      (alu_cmp),
       .o_sh_done  (alu_sh_done),
+      .o_sh_done_r (alu_sh_done_r),
       //Control
-      .i_shift_op (shift_op),
       .i_op_b_rs2 (op_b_source),
       .i_sub      (alu_sub),
       .i_bool_op  (alu_bool_op),
       .i_cmp_eq   (alu_cmp_eq),
       .i_cmp_sig  (alu_cmp_sig),
-      .i_sh_right (alu_sh_right),
-      .i_sh_signed (alu_sh_signed),
       .i_rd_sel   (alu_rd_sel),
       //Data
       .i_rs1      (rs1),
@@ -372,7 +368,7 @@ module serv_top
       .i_trap      (trap),
       .i_mret      (mret),
       .i_mepc      (o_ibus_adr[0]),
-      .i_mem_misalign (mem_misalign),
+      .i_mem_op    (mem_op),
       .i_bufreg_q  (bufreg_q),
       .i_bad_pc    (bad_pc),
       .o_csr_pc    (csr_pc),
@@ -404,17 +400,17 @@ module serv_top
      #(.WITH_CSR (WITH_CSR))
    mem_if
      (
-      .i_clk    (clk),
+      .i_clk      (clk),
       //State
-      .i_en     (cnt_en),
-      .i_bytecnt (mem_bytecnt),
+      .i_en       (cnt_en),
+      .i_bytecnt  (mem_bytecnt),
       .i_lsb      (lsb),
       .o_misalign (mem_misalign),
       //Control
-      .i_mem_op (mem_op),
-      .i_signed (mem_signed),
-      .i_word   (mem_word),
-      .i_half   (mem_half),
+      .i_mem_op   (mem_op),
+      .i_signed   (mem_signed),
+      .i_word     (mem_word),
+      .i_half     (mem_half),
       //Data
       .i_rs2    (rs2),
       .o_rd     (mem_rd),
@@ -430,15 +426,15 @@ module serv_top
 	   (
 	    .i_clk        (clk),
 	    //State
+	    .i_init       (init),
 	    .i_en         (cnt_en),
 	    .i_cnt0to3    (cnt0to3),
 	    .i_cnt3       (cnt3),
 	    .i_cnt7       (cnt7),
 	    .i_cnt_done   (cnt_done),
-	    .i_mem_misalign (mem_misalign),
+	    .i_mem_op     (mem_op),
 	    .i_mtip       (i_timer_irq),
-	    .i_trap_taken (trap_taken),
-	    .i_pending_irq (pending_irq),
+	    .i_trap       (trap),
 	    .o_new_irq    (new_irq),
 	    //Control
 	    .i_e_op       (e_op),

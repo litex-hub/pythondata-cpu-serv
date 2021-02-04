@@ -16,7 +16,6 @@ module serv_decode
    output wire 	     o_slt_op,
    output wire 	     o_rd_op,
    //To bufreg
-   output wire 	     o_bufreg_loop,
    output wire 	     o_bufreg_rs1_en,
    output wire 	     o_bufreg_imm_en,
    output wire 	     o_bufreg_clr_lsb,
@@ -77,10 +76,6 @@ module serv_decode
    assign o_bufreg_rs1_en = !opcode[4] | (!opcode[1] & opcode[0]);
    assign o_bufreg_imm_en = !opcode[2];
 
-
-   //Loop bufreg contents for shift operations
-   assign o_bufreg_loop   = op_or_opimm;
-
    //Clear LSB of immediate for BRANCH and JAL ops
    //True for BRANCH and JAL
    //False for JALR/LOAD/STORE/OP/OPIMM?
@@ -136,36 +131,43 @@ module serv_decode
    assign o_e_op = opcode[4] & opcode[2] & !op21 & !(|funct3);
 
    //opcode & funct3 & imm30
-   //True for sub, sll*, b*, slt*
-   //False for add*, sr*
-   assign o_alu_sub = (!funct3[2] & (funct3[0] | (opcode[3] & imm30))) | funct3[1] | opcode[4];
 
+   /*
+    True for sub, b*, slt*
+    False for add*
+    op    opcode f3  i30
+    b*    11000  xxx x   t
+    addi  00100  000 x   f
+    slt*  0x100  01x x   t
+    add   01100  000 0   f
+    sub   01100  000 1   t
+    */
+   assign o_alu_sub = funct3[1] | funct3[0] | (opcode[3] & imm30) | opcode[4];
 
    /*
     Bits 26, 22, 21 and 20 are enough to uniquely identify the eight supported CSR regs
     mtvec, mscratch, mepc and mtval are stored externally (normally in the RF) and are
-    treated differently from mstatus, mie, mcause and mip which are stored in serv_csr.
+    treated differently from mstatus, mie and mcause which are stored in serv_csr.
     
-    The former get a 2-bit address (as found in serv_params.vh) while the latter get a
+    The former get a 2-bit address as seen below while the latter get a
     one-hot enable signal each.
     
-    Hex|2 222|Reg
-    adr|6 210|name
-    ---|-----|-------
-    300|0_000|mstatus
-    304|0_100|mie
-    305|0_101|mtvec
-    340|1_000|mscratch
-    341|1_001|mepc
-    342|1_010|mcause
-    343|1_011|mtval
-    344|1_100|mip
+    Hex|2 222|Reg     |csr
+    adr|6 210|name    |addr
+    ---|-----|--------|----
+    300|0_000|mstatus | xx
+    304|0_100|mie     | xx
+    305|0_101|mtvec   | 01
+    340|1_000|mscratch| 00
+    341|1_001|mepc    | 10
+    342|1_010|mcause  | xx
+    343|1_011|mtval   | 11
     
     */
 
    //true  for mtvec,mscratch,mepc and mtval
-   //false for mstatus, mie, mcause, mip
-   wire csr_valid = op20 | (op26 & !op22 & !op21);
+   //false for mstatus, mie, mcause
+   wire csr_valid = op20 | (op26 & !op21);
 
    assign o_rd_csr_en = csr_op;
 
@@ -177,11 +179,7 @@ module serv_decode
    assign o_csr_source = funct3[1:0];
    assign o_csr_d_sel = funct3[2];
    assign o_csr_imm_en = opcode[4] & opcode[2] & funct3[2];
-
-   assign o_csr_addr = (op26 & !op20) ? CSR_MSCRATCH :
-		       (op26 & !op21) ? CSR_MEPC :
-		       (op26)         ? CSR_MTVAL :
-		       CSR_MTVEC;
+   assign o_csr_addr = {op26 & op20, !op26 | op21};
 
    assign o_alu_cmp_eq = funct3[2:1] == 2'b00;
 

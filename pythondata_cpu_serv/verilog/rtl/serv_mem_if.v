@@ -3,16 +3,19 @@ module serv_mem_if
   #(parameter WITH_CSR = 1)
   (
    input wire 	      i_clk,
+   //State
    input wire 	      i_en,
+   input wire [1:0]   i_bytecnt,
+   input wire [1:0]   i_lsb,
+   output wire 	      o_misalign,
+   //Control
    input wire 	      i_mem_op,
    input wire 	      i_signed,
    input wire 	      i_word,
    input wire 	      i_half,
-   input wire [1:0]   i_bytecnt,
+   //Data
    input wire 	      i_rs2,
    output wire 	      o_rd,
-   input wire [1:0]   i_lsb,
-   output wire 	      o_misalign,
    //External interface
    output wire [31:0] o_wb_dat,
    output wire [3:0]  o_wb_sel,
@@ -20,12 +23,11 @@ module serv_mem_if
    input wire 	      i_wb_ack);
 
    reg           signbit;
+   reg [31:0] 	 dat;
 
    wire [2:0] 	 tmp = {1'b0,i_bytecnt}+{1'b0,i_lsb};
 
-   reg [31:0] dat;
-
-   wire dat_en = i_en & !tmp[2];
+   wire 	 dat_en = i_en & !tmp[2];
 
    wire 	 dat_cur =
 		 ((i_lsb == 2'd3) & dat[24]) |
@@ -33,7 +35,10 @@ module serv_mem_if
 		 ((i_lsb == 2'd1) & dat[8]) |
 		 ((i_lsb == 2'd0) & dat[0]);
 
-   wire dat_valid = i_word | (i_bytecnt == 2'b00) | (i_half & !i_bytecnt[1]);
+   wire dat_valid =
+	i_word |
+	(i_bytecnt == 2'b00) |
+	(i_half & !i_bytecnt[1]);
 
    assign o_rd = i_mem_op & (dat_valid ? dat_cur : signbit & i_signed);
 
@@ -54,15 +59,12 @@ module serv_mem_if
       if (dat_valid)
         signbit <= dat_cur;
    end
-   generate
-      if (WITH_CSR) begin
-	 reg 		 misalign;
-	 always @(posedge i_clk)
-	   misalign <= (i_lsb[0] & (i_word | i_half)) | (i_lsb[1] & i_word);
-	 assign o_misalign = misalign & i_mem_op;
-      end else begin
-	 assign o_misalign = 1'b0;
-      end
-   endgenerate
+
+   /*
+    mem_misalign is checked after the init stage to decide whether to do a data
+    bus transaction or go to the trap state. It is only guaranteed to be correct
+    at this time
+    */
+   assign o_misalign = WITH_CSR & ((i_lsb[0] & (i_word | i_half)) | (i_lsb[1] & i_word));
 
 endmodule
