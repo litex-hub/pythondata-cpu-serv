@@ -4,30 +4,32 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.0.post181"
-version_tuple = (1, 0, 181)
+version_str = "1.0.post182"
+version_tuple = (1, 0, 182)
 try:
     from packaging.version import Version as V
-    pversion = V("1.0.post181")
+    pversion = V("1.0.post182")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.0.post92"
-data_version_tuple = (1, 0, 92)
+data_version_str = "1.0.post93"
+data_version_tuple = (1, 0, 93)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.0.post92")
+    pdata_version = V("1.0.post93")
 except ImportError:
     pass
-data_git_hash = "bc9705bef2a8e1f21b0df7f8a59cc8541851e811"
-data_git_describe = "v1.0-92-gbc9705b"
+data_git_hash = "9a0b0e877c809629ced825a91cf4eed578c15eed"
+data_git_describe = "v1.0-93-g9a0b0e8"
 data_git_msg = """\
-commit bc9705bef2a8e1f21b0df7f8a59cc8541851e811
-Author: somhi <jordisx@gmail.com>
-Date:   Sat Jan 30 12:52:38 2021 +0100
+commit 9a0b0e877c809629ced825a91cf4eed578c15eed
+Author: Olof Kindgren <olof.kindgren@gmail.com>
+Date:   Thu Feb 4 15:15:26 2021 +0100
 
-    add support for SoCKit development kit board
+    Move shifter to mem_if
+    
+    This allows reusing the data bus registers for shift amount
 
 """
 
