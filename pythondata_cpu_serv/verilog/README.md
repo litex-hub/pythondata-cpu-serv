@@ -142,6 +142,18 @@ FPGA Pin D11 (Connector JP1, pin 38) is used for UART output with 57600 baud rat
 
     fusesoc run --target=de0_nano servant
 
+### DECA development kit
+
+FPGA Pin W18 (Pin 3 P8 connector)  is used for UART output with 57600 baud rate. Key 0 is reset and Led 0 q output.
+
+    fusesoc run --target=deca servant
+
+### SoCKit development kit
+
+FPGA Pin F14 (HSTC GPIO addon connector J2, pin 2) is used for UART output with 57600 baud rate. 
+
+    fusesoc run --target=sockit servant
+
 ### Saanlima Pipistrello (Spartan6 LX45)
 
 Pin A10 (usb_data<1>) is used for UART output with 57600 baud rate (to use
