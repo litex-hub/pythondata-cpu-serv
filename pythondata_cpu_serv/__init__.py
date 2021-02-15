@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.0.post184"
-version_tuple = (1, 0, 184)
+version_str = "1.0.post185"
+version_tuple = (1, 0, 185)
 try:
     from packaging.version import Version as V
-    pversion = V("1.0.post184")
+    pversion = V("1.0.post185")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.0.post95"
-data_version_tuple = (1, 0, 95)
+data_version_str = "1.0.post96"
+data_version_tuple = (1, 0, 96)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.0.post95")
+    pdata_version = V("1.0.post96")
 except ImportError:
     pass
-data_git_hash = "a6292d46a2030bb56ada7637bc4d56131e94c4f4"
-data_git_describe = "v1.0-95-ga6292d4"
+data_git_hash = "7624466ddd552dbd8c94127149527638dee3ca37"
+data_git_describe = "v1.0-96-g7624466"
 data_git_msg = """\
-commit a6292d46a2030bb56ada7637bc4d56131e94c4f4
-Author: somhi <jordisx@gmail.com>
-Date:   Sun Feb 7 12:04:23 2021 +0100
+commit 7624466ddd552dbd8c94127149527638dee3ca37
+Author: Olof Kindgren <olof.kindgren@gmail.com>
+Date:   Sun Feb 14 22:13:49 2021 +0100
 
-    Add support for DECA Max 10 board
+    Optimize serv_rf_ram_if
 
 """
 
