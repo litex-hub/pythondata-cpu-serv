@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.0.post191"
-version_tuple = (1, 0, 191)
+version_str = "1.0.post192"
+version_tuple = (1, 0, 192)
 try:
     from packaging.version import Version as V
-    pversion = V("1.0.post191")
+    pversion = V("1.0.post192")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.0.post96"
-data_version_tuple = (1, 0, 96)
+data_version_str = "1.0.post97"
+data_version_tuple = (1, 0, 97)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.0.post96")
+    pdata_version = V("1.0.post97")
 except ImportError:
     pass
-data_git_hash = "7624466ddd552dbd8c94127149527638dee3ca37"
-data_git_describe = "v1.0-96-g7624466"
+data_git_hash = "727bb40a8784c50b081abdcfd784a5bc7c34e40e"
+data_git_describe = "v1.0-97-g727bb40"
 data_git_msg = """\
-commit 7624466ddd552dbd8c94127149527638dee3ca37
+commit 727bb40a8784c50b081abdcfd784a5bc7c34e40e
 Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Sun Feb 14 22:13:49 2021 +0100
+Date:   Sun Mar 14 00:12:29 2021 +0100
 
-    Optimize serv_rf_ram_if
+    Simplify control logic for bool ops
 
 """
 
