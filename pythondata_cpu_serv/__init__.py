@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.0.post192"
-version_tuple = (1, 0, 192)
+version_str = "1.0.post193"
+version_tuple = (1, 0, 193)
 try:
     from packaging.version import Version as V
-    pversion = V("1.0.post192")
+    pversion = V("1.0.post193")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.0.post97"
-data_version_tuple = (1, 0, 97)
+data_version_str = "1.0.post98"
+data_version_tuple = (1, 0, 98)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.0.post97")
+    pdata_version = V("1.0.post98")
 except ImportError:
     pass
-data_git_hash = "727bb40a8784c50b081abdcfd784a5bc7c34e40e"
-data_git_describe = "v1.0-97-g727bb40"
+data_git_hash = "548b7fbb41770b80810e011de438aedf1c814dd5"
+data_git_describe = "v1.0-98-g548b7fb"
 data_git_msg = """\
-commit 727bb40a8784c50b081abdcfd784a5bc7c34e40e
+commit 548b7fbb41770b80810e011de438aedf1c814dd5
 Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Sun Mar 14 00:12:29 2021 +0100
+Date:   Sun Mar 14 23:22:50 2021 +0100
 
-    Simplify control logic for bool ops
+    remove redundant ALU control signal
 
 """
 
