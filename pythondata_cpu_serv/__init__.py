@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.0.post194"
-version_tuple = (1, 0, 194)
+version_str = "1.0.post195"
+version_tuple = (1, 0, 195)
 try:
     from packaging.version import Version as V
-    pversion = V("1.0.post194")
+    pversion = V("1.0.post195")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.0.post99"
-data_version_tuple = (1, 0, 99)
+data_version_str = "1.0.post100"
+data_version_tuple = (1, 0, 100)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.0.post99")
+    pdata_version = V("1.0.post100")
 except ImportError:
     pass
-data_git_hash = "9b84539bc0a72fb4c99a15cd894ffb62e3cc8e05"
-data_git_describe = "v1.0-99-g9b84539"
+data_git_hash = "079a5c4250067a4e0a65cf2aa8daed83f0f233c2"
+data_git_describe = "v1.0-100-g079a5c4"
 data_git_msg = """\
-commit 9b84539bc0a72fb4c99a15cd894ffb62e3cc8e05
+commit 079a5c4250067a4e0a65cf2aa8daed83f0f233c2
 Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Wed Mar 17 21:14:41 2021 +0100
+Date:   Thu Apr 8 15:36:11 2021 +0200
 
-    Add LibreCores badge
+    Remove unused wgo register
 
 """
 
