@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.0.post195"
-version_tuple = (1, 0, 195)
+version_str = "1.0.post196"
+version_tuple = (1, 0, 196)
 try:
     from packaging.version import Version as V
-    pversion = V("1.0.post195")
+    pversion = V("1.0.post196")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.0.post100"
-data_version_tuple = (1, 0, 100)
+data_version_str = "1.0.post101"
+data_version_tuple = (1, 0, 101)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.0.post100")
+    pdata_version = V("1.0.post101")
 except ImportError:
     pass
-data_git_hash = "079a5c4250067a4e0a65cf2aa8daed83f0f233c2"
-data_git_describe = "v1.0-100-g079a5c4"
+data_git_hash = "f4b75f0be34377643f4cca5614249d2fd01d346b"
+data_git_describe = "v1.0-101-gf4b75f0"
 data_git_msg = """\
-commit 079a5c4250067a4e0a65cf2aa8daed83f0f233c2
+commit f4b75f0be34377643f4cca5614249d2fd01d346b
 Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Thu Apr 8 15:36:11 2021 +0200
+Date:   Sat Apr 17 23:59:15 2021 +0200
 
-    Remove unused wgo register
+    Start documenting instruction life cycle
 
 """
 
