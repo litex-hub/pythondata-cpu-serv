@@ -4,39 +4,39 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.0.post196"
-version_tuple = (1, 0, 196)
+version_str = "1.0.post250"
+version_tuple = (1, 0, 250)
 try:
     from packaging.version import Version as V
-    pversion = V("1.0.post196")
+    pversion = V("1.0.post250")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.0.post101"
-data_version_tuple = (1, 0, 101)
+data_version_str = "1.0.post148"
+data_version_tuple = (1, 0, 148)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.0.post101")
+    pdata_version = V("1.0.post148")
 except ImportError:
     pass
-data_git_hash = "f4b75f0be34377643f4cca5614249d2fd01d346b"
-data_git_describe = "v1.0-101-gf4b75f0"
+data_git_hash = "99f82af6eb6b7fe5dad682bd315349fcd37fa102"
+data_git_describe = "v1.0-148-g99f82af"
 data_git_msg = """\
-commit f4b75f0be34377643f4cca5614249d2fd01d346b
+commit 99f82af6eb6b7fe5dad682bd315349fcd37fa102
 Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Sat Apr 17 23:59:15 2021 +0200
+Date:   Sun Oct 3 23:28:45 2021 +0200
 
-    Start documenting instruction life cycle
+    Simplify optional MDU logic
 
 """
 
 # Tool version info
-tool_version_str = "0.0.post95"
-tool_version_tuple = (0, 0, 95)
+tool_version_str = "0.0.post102"
+tool_version_tuple = (0, 0, 102)
 try:
     from packaging.version import Version as V
-    ptool_version = V("0.0.post95")
+    ptool_version = V("0.0.post102")
 except ImportError:
     pass
 
