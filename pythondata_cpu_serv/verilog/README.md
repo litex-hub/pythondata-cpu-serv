@@ -3,12 +3,18 @@
 # SERV
 
 [![LibreCores](https://www.librecores.org/olofk/serv/badge.svg?style=flat)](https://www.librecores.org/olofk/serv)
+[![Join the chat at https://gitter.im/librecores/serv](https://badges.gitter.im/librecores/serv.svg)](https://gitter.im/librecores/serv?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![CI status](https://github.com/olofk/serv/workflows/CI/badge.svg)](https://github.com/olofk/serv/actions?query=workflow%3ACI)
+[![Documentation Status](https://readthedocs.org/projects/serv/badge/?version=latest)](https://serv.readthedocs.io/en/latest/?badge=latest)
 
 SERV is an award-winning bit-serial RISC-V core
 
-If you want to know more about SERV, what a bit-serial CPU is and what it's good for, I recommend starting out by watching the movies [introduction to SERV](https://diode.zone/videos/watch/0230a518-e207-4cf6-b5e2-69cc09411013) and the [presentation from the Zürich 2019 RISC-V workshop](https://www.youtube.com/watch?v=xjIxORBRaeQ)
+If you want to know more about SERV, what a bit-serial CPU is and what it's good for, I recommend starting out by watching the fantastic short SERV movies
+* [introduction to SERV](https://www.award-winning.me/serv-introduction/)
+* [SERV : RISC-V for a fistful of gates](https://www.award-winning.me/serv-for-a-fistful-of-gates/)
+* [Bit by bit - How to fit 8 RISC V cores in a $38 FPGA board (presentation from the Zürich 2019 RISC-V workshop)](https://www.youtube.com/watch?v=xjIxORBRaeQ)
 
-There's also an official [SERV user manual](https://serv.readthedocs.io/en/latest/#) with fancy block diagrams and an in-depth description of how some things work.
+There's also an official [SERV user manual](https://serv.readthedocs.io/en/latest/#) with fancy block diagrams, timing diagrams and an in-depth description of how some things work.
 
 ## Prerequisites
 
@@ -27,7 +33,7 @@ The FuseSoC standard library already contain a version of SERV, but if we want t
 
 `fusesoc library add serv https://github.com/olofk/serv`
 
-The SERV repo will now be available in $WORKSPACE/fusesoc_libraries/serv. To save some typing, we will refer to that directory as `$SERV`. 
+The SERV repo will now be available in $WORKSPACE/fusesoc_libraries/serv. To save some typing, we will refer to that directory as `$SERV`.
 
 We are now ready to do our first exercises with SERV
 
@@ -37,11 +43,10 @@ If [Verilator](https://www.veripool.org/wiki/verilator) is installed, we can use
 
 If everything worked, the output should look like
 
-    INFO: Preparing ::serv:1.0.2
+    INFO: Preparing ::serv:1.1.0
     INFO: Setting up project
-    
+
     INFO: Building simulation model
-    verilator -f serv_1.0.2.vc 
     INFO: Running
 
 ## Running pre-built test software
@@ -71,21 +76,23 @@ Other applications can be tested by compiling and converting to bin and then hex
 
 ## Run RISC-V compliance tests
 
+**Note:** The following instructions are valid for version 1.0 of the RISC-V compliance tests. The target-specific support for SERV has not yet been ported to newer versions.
+
 Build the verilator model (if not already done)
 
     fusesoc run --target=verilator_tb --build servant
 
 Download the tests repo
 
-    git clone https://github.com/riscv/riscv-compliance
+    git clone https://github.com/riscv/riscv-compliance --branch 1.0
 
 To run the RISC-V compliance tests, we need to supply the SERV-specific support files and point the test suite to where it can find a target to run (i.e. the previously built Verilator model)
 
 Run the compliance tests
 
-    cd riscv-compliance && make TARGETDIR=$SERV/riscv-target RISCV_TARGET=serv RISCV_DECICE=rv32i RISCV_ISA=rv32i TARGET_SIM=$SERV/build/servant_1.0.2/verilator_tb-verilator/Vservant_sim
+    cd riscv-compliance && make TARGETDIR=$SERV/riscv-target RISCV_TARGET=serv RISCV_DEVICE=rv32i RISCV_ISA=rv32i TARGET_SIM=$WORKSPACE/build/servant_1.1.0/verilator_tb-verilator/Vservant_sim
 
-The above will run all tests in the rv32i test suite. Since SERV also implement the `rv32Zicsr` and `rv32Zifencei` extensions, these can also be tested by choosing any of them instead of rv32i as the `RISCV_ISA` variable.
+The above will run all tests in the rv32i test suite. Since SERV also implement the `rv32im`, `rv32Zicsr` and `rv32Zifencei` extensions, these can also be tested by choosing any of them instead of rv32i as the `RISCV_ISA` variable.
 
 ## Run on hardware
 
@@ -129,7 +136,7 @@ serial console will show up.
 Pin D1 is used for UART output with 115200 baud rate.
 
     fusesoc run --target=orangecrab_r0.2 servant
-    dfu-util -d 1209:5af0 -D build/servant_1.0.2/orangecrab_r0.2-trellis/servant_1.0.2.bit
+    dfu-util -d 1209:5af0 -D build/servant_1.1.0/orangecrab_r0.2-trellis/servant_1.1.0.bit
 
 ### Arty A7 35T
 
@@ -144,15 +151,32 @@ FPGA Pin D11 (Connector JP1, pin 38) is used for UART output with 57600 baud rat
 
     fusesoc run --target=de0_nano servant
 
+### DE10 Nano
+
+FPGA Pin Y15 (Connector JP7, pin 1) is used for UART output with 57600 baud rate. DE10 Nano needs an external 3.3V UART to connect to this pin
+
+    fusesoc run --target=de10_nano servant
+
 ### DECA development kit
 
-FPGA Pin W18 (Pin 3 P8 connector)  is used for UART output with 57600 baud rate. Key 0 is reset and Led 0 q output.
+FPGA Pin W18 (Pin 3 P8 connector) is used for UART output with 57600 baud rate. Key 0 is reset and Led 0 q output.
 
     fusesoc run --target=deca servant
 
+### EBAZ4205 'Development' Board
+
+Pin B20 is used for UART output with 57600 baud rate. To use `blinky.hex`
+change B20 to W14 (red led) in `data/ebaz4205.xdc` file).
+
+    fusesoc run --target=ebaz4205 servant
+
+    fusesoc run --target=ebaz4205 servant --memfile=$SERV/sw/blinky.hex
+
+Reference: https://github.com/fusesoc/blinky#ebaz4205-development-board
+
 ### SoCKit development kit
 
-FPGA Pin F14 (HSTC GPIO addon connector J2, pin 2) is used for UART output with 57600 baud rate. 
+FPGA Pin F14 (HSTC GPIO addon connector J2, pin 2) is used for UART output with 57600 baud rate.
 
     fusesoc run --target=sockit servant
 
@@ -175,7 +199,14 @@ Pin 61 is used for UART output with 115200 baud rate. This pin is connected to a
 Pin 95 is used as the GPIO output which is connected to the board's green LED. Due to this board's limited Embedded BRAM, programs with a maximum of 7168 bytes can be loaded. The default program for this board is blinky.hex.
 
     fusesoc run --target=icestick servant
-    iceprog build/servant_1.0.2/icestick-icestorm/servant_1.0.2.bin
+    iceprog build/servant_1.1.0/icestick-icestorm/servant_1.1.0.bin
+
+### Nandland Go Board
+
+Pin 56 is used as the GPIO output which is connected to the board's LED1. Due to this board's limited Embedded BRAM, programs with a maximum of 7168 bytes can be loaded. The default program for this board is blinky.hex.
+
+    fusesoc run --target=go_board servant
+    iceprog build/servant_1.1.0/go_board-icestorm/servant_1.1.0.bin
 
 ## Other targets
 

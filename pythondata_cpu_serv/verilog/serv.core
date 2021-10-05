@@ -1,11 +1,11 @@
 CAPI=2:
 
-name : ::serv:1.0.2
+name : ::serv:1.1.0
 
 filesets:
   core:
     files:
-      - rtl/serv_params.vh : {is_include_file : true}
+      - "tool_verilator? (data/verilator_waiver.vlt)" : {file_type: vlt}
       - rtl/serv_bufreg.v
       - rtl/serv_alu.v
       - rtl/serv_csr.v
@@ -21,10 +21,17 @@ filesets:
       - rtl/serv_rf_top.v
     file_type : verilogSource
 
+  openlane:
+    files:
+      - data/params.tcl : {file_type : tclSource}
+      - rtl/serv_synth_wrapper.v : {file_type : verilogSource}
+
 targets:
   default:
     filesets : [core]
     parameters :
+      - "is_toplevel? (MDU)"
+      - "is_toplevel? (PRE_REGISTER)"
       - "is_toplevel? (RESET_STRATEGY)"
       - RISCV_FORMAL
       - SERV_CLEAR_RAM
@@ -37,9 +44,26 @@ targets:
     tools:
       verilator:
         mode : lint-only
+        verilator_options:
+          - "-Wall"
     toplevel : serv_rf_top
 
+  sky130:
+    default_tool : openlane
+    filesets : [core, openlane]
+    toplevel : serv_synth_wrapper
+
 parameters:
+  MDU:
+    datatype   : int
+    description: Enables interface for RISC-V standard M-extension
+    paramtype  : vlogparam
+
+  PRE_REGISTER:
+    datatype    : int
+    description : Register signals before or after the decoder
+    paramtype   : vlogparam
+
   RESET_STRATEGY:
     datatype : str
     paramtype : vlogparam

@@ -1,6 +1,7 @@
 `default_nettype none
 module serv_mem_if
-  #(parameter WITH_CSR = 1)
+  #(parameter WITH_CSR = 1,
+    parameter [0:0] MDU = 0)
   (
    input wire 	      i_clk,
    //State
@@ -18,6 +19,8 @@ module serv_mem_if
    input wire 	      i_signed,
    input wire 	      i_word,
    input wire 	      i_half,
+   //MDU
+   input wire         i_mdu_op,
    //Data
    input wire 	      i_op_b,
    output wire 	      o_rd,
@@ -30,9 +33,22 @@ module serv_mem_if
    reg           signbit;
    reg [31:0] 	 dat;
 
-   wire [2:0] 	 tmp = {1'b0,i_bytecnt}+{1'b0,i_lsb};
+   /*
+    Before a store operation, the data to be written needs to be shifted into
+    place. Depending on the address alignment, we need to shift different
+    amounts. One formula for calculating this is to say that we shift when
+    i_lsb + i_bytecnt < 4. Unfortunately, the synthesis tools don't seem to be
+    clever enough so the hideous expression below is used to achieve the same
+    thing in a more optimal way.
+    */
+   wire 	 byte_valid =
+		 (!i_lsb[0] & !i_lsb[1])         |
+		 (!i_bytecnt[0] & !i_bytecnt[1]) |
+		 (!i_bytecnt[1] & !i_lsb[1])     |
+		 (!i_bytecnt[1] & !i_lsb[0])     |
+		 (!i_bytecnt[0] & !i_lsb[1]);
 
-   wire 	 dat_en = i_shift_op | (i_en & !tmp[2]);
+   wire 	 dat_en = i_shift_op | (i_en & byte_valid);
 
    wire 	 dat_cur =
 		 ((i_lsb == 2'd3) & dat[24]) |
@@ -45,7 +61,17 @@ module serv_mem_if
 	(i_bytecnt == 2'b00) |
 	(i_half & !i_bytecnt[1]);
 
-   assign o_rd = i_mem_op & (dat_valid ? dat_cur : signbit & i_signed);
+   wire mem_rd = i_mem_op & (dat_valid ? dat_cur : signbit & i_signed);
+   
+   generate
+     if(MDU) begin
+       wire mdu_rd = i_mdu_op & dat_cur;
+       assign o_rd = mem_rd | mdu_rd;
+     end else begin
+       wire mdu_rd = 1'b0;
+       assign o_rd = mem_rd;
+     end
+   endgenerate
 
    assign o_wb_sel[3] = (i_lsb == 2'b11) | i_word | (i_half & i_lsb[1]);
    assign o_wb_sel[2] = (i_lsb == 2'b10) | i_word;
