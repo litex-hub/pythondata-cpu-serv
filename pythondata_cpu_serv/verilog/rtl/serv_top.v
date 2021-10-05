@@ -2,8 +2,10 @@
 
 module serv_top
   #(parameter WITH_CSR = 1,
+    parameter PRE_REGISTER = 1,
     parameter RESET_STRATEGY = "MINI",
-    parameter RESET_PC = 32'd0)
+    parameter RESET_PC = 32'd0,
+    parameter [0:0] MDU = 1'b0)
    (
    input wire 		      clk,
    input wire 		      i_rst,
@@ -56,13 +58,22 @@ module serv_top
    output wire 		      o_dbus_we ,
    output wire 		      o_dbus_cyc,
    input wire [31:0] 	      i_dbus_rdt,
-   input wire 		      i_dbus_ack);
+   input wire 		      i_dbus_ack,
+   //Extension
+   output wire [ 2:0] o_ext_funct3,
+   input  wire        i_ext_ready,
+   input wire  [31:0] i_ext_rd,
+   output wire [31:0] o_ext_rs1,
+   output wire [31:0] o_ext_rs2,
+   //MDU
+   output wire        o_mdu_valid);
 
    wire [4:0]    rd_addr;
    wire [4:0]    rs1_addr;
    wire [4:0]    rs2_addr;
 
    wire [3:0] 	 immdec_ctrl;
+   wire [3:0] 	immdec_en;
 
    wire          sh_right;
    wire 	 bne_or_bge;
@@ -74,6 +85,7 @@ module serv_top
    wire 	 shift_op;
    wire 	 slt_op;
    wire 	 rd_op;
+   wire   mdu_op;
 
    wire 	 rd_alu_en;
    wire 	 rd_csr_en;
@@ -109,6 +121,8 @@ module serv_top
    wire 	 bufreg_imm_en;
    wire 	 bufreg_clr_lsb;
    wire 	 bufreg_q;
+   wire [31:0] dbus_rdt;
+   wire        dbus_ack;
 
    wire          alu_sub;
    wire [1:0] 	 alu_bool_op;
@@ -155,7 +169,8 @@ module serv_top
 
    serv_state
      #(.RESET_STRATEGY (RESET_STRATEGY),
-       .WITH_CSR (WITH_CSR))
+       .WITH_CSR (WITH_CSR),
+       .MDU(MDU))
    state
      (
       .i_clk (clk),
@@ -192,6 +207,11 @@ module serv_top
       .i_slt_op       (slt_op),
       .i_e_op         (e_op),
       .i_rd_op        (rd_op),
+      //MDU
+      .i_mdu_op       (mdu_op),
+      .o_mdu_valid    (o_mdu_valid),
+      //Extension
+      .i_mdu_ready    (i_ext_ready),
       //External
       .o_dbus_cyc     (o_dbus_cyc),
       .i_dbus_ack     (i_dbus_ack),
@@ -203,7 +223,10 @@ module serv_top
       .i_rf_ready     (i_rf_ready),
       .o_rf_rd_en     (rd_en));
 
-   serv_decode decode
+   serv_decode
+     #(.PRE_REGISTER (PRE_REGISTER),
+       .MDU(MDU))
+   decode
      (
       .clk (clk),
       //Input
@@ -220,6 +243,10 @@ module serv_top
       .o_slt_op           (slt_op),
       .o_rd_op            (rd_op),
       .o_sh_right         (sh_right),
+      .o_mdu_op           (mdu_op),
+      //Extension
+      .o_ext_funct3       (o_ext_funct3),
+      
       //To bufreg
       .o_bufreg_rs1_en    (bufreg_rs1_en),
       .o_bufreg_imm_en    (bufreg_imm_en),
@@ -253,6 +280,7 @@ module serv_top
       .o_csr_imm_en       (csr_imm_en),
       //To top
       .o_immdec_ctrl      (immdec_ctrl),
+      .o_immdec_en        (immdec_en),
       .o_rd_csr_en        (rd_csr_en),
       .o_rd_alu_en        (rd_alu_en));
 
@@ -263,6 +291,7 @@ module serv_top
       .i_cnt_en     (cnt_en),
       .i_cnt_done   (cnt_done),
       //Control
+      .i_immdec_en        (immdec_en),
       .i_csr_imm_en (csr_imm_en),
       .i_ctrl       (immdec_ctrl),
       .o_rd_addr    (rd_addr),
@@ -275,7 +304,9 @@ module serv_top
       .i_wb_en      (i_ibus_ack),
       .i_wb_rdt     (i_ibus_rdt[31:7]));
 
-   serv_bufreg bufreg
+   serv_bufreg 
+      #(.MDU(MDU))
+   bufreg
      (
       .i_clk    (clk),
       //State
@@ -283,6 +314,7 @@ module serv_top
       .i_cnt1   (cnt1),
       .i_en     (bufreg_en),
       .i_init   (init),
+      .i_mdu_op (mdu_op),
       .o_lsb    (lsb),
       //Control
       .i_sh_signed (bufreg_sh_signed),
@@ -294,7 +326,8 @@ module serv_top
       .i_imm    (imm),
       .o_q      (bufreg_q),
       //External
-      .o_dbus_adr (o_dbus_adr));
+      .o_dbus_adr (o_dbus_adr),
+      .o_ext_rs1  (o_ext_rs1));
 
    serv_ctrl
      #(.RESET_PC (RESET_PC),
@@ -392,7 +425,8 @@ module serv_top
       .o_csr       (rf_csr_out));
 
    serv_mem_if
-     #(.WITH_CSR (WITH_CSR))
+     #(.WITH_CSR (WITH_CSR),
+       .MDU(MDU))
    mem_if
      (
       .i_clk      (clk),
@@ -406,6 +440,7 @@ module serv_top
       .o_sh_done   (mem_sh_done),
       .o_sh_done_r (mem_sh_done_r),
       //Control
+      .i_mdu_op   (mdu_op),
       .i_mem_op   (mem_op),
       .i_shift_op (shift_op),
       .i_signed   (mem_signed),
@@ -417,14 +452,17 @@ module serv_top
       //External interface
       .o_wb_dat   (o_dbus_dat),
       .o_wb_sel   (o_dbus_sel),
-      .i_wb_rdt   (i_dbus_rdt),
-      .i_wb_ack   (i_dbus_ack));
+      .i_wb_rdt   (dbus_rdt),
+      .i_wb_ack   (dbus_ack));
 
    generate
       if (WITH_CSR) begin
-	 serv_csr csr
+	 serv_csr
+	   #(.RESET_STRATEGY (RESET_STRATEGY))
+	 csr
 	   (
 	    .i_clk        (clk),
+	    .i_rst        (i_rst),
 	    //State
 	    .i_init       (init),
 	    .i_en         (cnt_en),
@@ -466,12 +504,18 @@ module serv_top
    wire rs_en = (branch_op|mem_op|shift_op|slt_op) ? init : ctrl_pc_en;
 
    always @(posedge clk) begin
+      /* End of instruction */
       rvfi_valid <= cnt_done & ctrl_pc_en & !i_rst;
       rvfi_order <= rvfi_order + {63'd0,rvfi_valid};
+
+      /* Get instruction word when it's fetched from ibus */
       if (o_ibus_cyc & i_ibus_ack)
 	rvfi_insn <= i_ibus_rdt;
+
+      /* Store data written to rd */
       if (o_wen0)
         rvfi_rd_wdata <= {o_wdata0,rvfi_rd_wdata[31:1]};
+
       if (cnt_done & ctrl_pc_en) begin
          rvfi_pc_rdata <= pc;
 	 if (!(rd_en & (|rd_addr))) begin
@@ -485,18 +529,22 @@ module serv_top
          pc <= rvfi_pc_wdata;
       end
 
+      /* Not used */
       rvfi_halt <= 1'b0;
       rvfi_intr <= 1'b0;
       rvfi_mode <= 2'd3;
       rvfi_ixl = 2'd1;
+
+      /* RS1 not valid during J, U instructions (immdec_en[1]) */
+      /* RS2 not valid during I, J, U instructions (immdec_en[2]) */
       if (i_rf_ready) begin
-	 rvfi_rs1_addr <= rs1_addr;
-         rvfi_rs2_addr <= rs2_addr;
+	 rvfi_rs1_addr <= !immdec_en[1] ? rs1_addr : 5'd0;
+         rvfi_rs2_addr <= !immdec_en[2] /*rs2_valid*/ ? rs2_addr : 5'd0;
 	 rvfi_rd_addr  <= rd_addr;
       end
       if (rs_en) begin
-         rvfi_rs1_rdata <= {rs1,rvfi_rs1_rdata[31:1]};
-         rvfi_rs2_rdata <= {rs2,rvfi_rs2_rdata[31:1]};
+         rvfi_rs1_rdata <= {!immdec_en[1] & rs1,rvfi_rs1_rdata[31:1]};
+         rvfi_rs2_rdata <= {!immdec_en[2] & rs2,rvfi_rs2_rdata[31:1]};
       end
 
       if (i_dbus_ack) begin
@@ -518,6 +566,17 @@ module serv_top
 
 
 `endif
+
+generate
+  if (MDU) begin
+    assign dbus_rdt = i_ext_ready ? i_ext_rd:i_dbus_rdt;
+    assign dbus_ack = i_dbus_ack | i_ext_ready;
+  end else begin
+    assign dbus_rdt = i_dbus_rdt;  
+    assign dbus_ack = i_dbus_ack;
+  end
+  assign o_ext_rs2 = o_dbus_dat;
+endgenerate
 
 endmodule
 `default_nettype wire

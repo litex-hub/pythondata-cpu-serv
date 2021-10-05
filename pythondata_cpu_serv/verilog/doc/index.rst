@@ -178,6 +178,12 @@ Instruction life cycle
 
 The life cycle of an instruction starts by the core issuing a request for a new instruction on the ibus and ends when the PC has been updated with the address of the next instruction. This section goes through what happens between those points for the various types of instructions. SERV distinguishes between two-stage and one-stage operations with the former category being all jump (branch), shift, slt and load/store instructions and the latter all other operations. In addition to this, exceptions are a special case. Only two-stage operations (jump, load/store) can cause an exception. Regardless of instruction type, they all start out the same way.
 
+.. image:: life_cycle.png
+
+Fetch
+^^^^^
+The bus requests begin by SERV raising o_ibus_cyc until the memory responds with an i_ibus_ack and presents the instruction on i_ibus_rdt. Upon seeing the ack, SERV will lower cyc to indicate the end of the bus cycle.
+
 .. wavedrom::
 
         { signal: [
@@ -198,11 +204,11 @@ The life cycle of an instruction starts by the core issuing a request for a new 
           "a~>b","b~>c"]
         }
 
-The bus requests begin by SERV raising o_ibus_cyc until the memory responds with an i_ibus_ack and presents the instruction on i_ibus_rdt. Upon seeing the ack, SERV will ower cyc to indicate the end of the bus cycle.
+Decode
+^^^^^^
+When the ack appears, two things happen in SERV. The relevant portions of the instruction such as opcode, funct3 and immediate value are saved in serv_decode and serv_immdec. The saved bits of the instruction is then decoded to create the internal control signals that corresponds to the current instruction. The decoded control signals remain static throughout the instruction life cycle.
 
-When the ack appears, two things happen in SERV. The relevant portions such as opcode, funct3 and immediate value of the instruction are saved in serv_decode and serv_immdec. The saved bits of the instruction is then decoded to create the internal control signals that corresponds to the current instruction.
-
-The other thing to happen is that request to start accessing the register file is sent by strobing rf_rreq which prepares the register file for both read and write access.
+The other thing to happen is that a request to start accessing the register file is sent by strobing rf_rreq which prepares the register file for both read and write access.
 
 .. wavedrom::
 
@@ -224,17 +230,152 @@ The interface between the core and the register file is described in a protocol 
 .. wavedrom::
 
         { signal: [
-          { name: "clk"    , wave: "0P......"},
-          { name: "wreq"   , wave: "010.....", node: ".a..."},
-          { name: "ready"  , wave: "010.....", node: ".b."},
-          { name: "wreg0"  , wave: "x.2.....", node: "....", data: "r0"},
-          { name: "wreg1"  , wave: "x.2.....", node: "....", data: "r1"},
-          { name: "wen0"   , wave: "0.1.....", node: "....", data: "r0"},
-          { name: "wen1"   , wave: "0.......", node: "....", data: "r1"},
-          { name: "wdata0" , wave: "-..12345", data: "0 1 2 3 4"},
-          { name: "wdata1" , wave: "-.......", data: "0 1 2 3 4"},
+          { name: "clk"    , wave: "0P....."},
+          { name: "wreq"   , wave: "010....", node: ".a..."},
+          { name: "ready"  , wave: "010....", node: ".b."},
+          { name: "wreg0"  , wave: "x.2....", node: "....", data: "r0"},
+          { name: "wreg1"  , wave: "x.2....", node: "....", data: "r1"},
+          { name: "wen0"   , wave: "0.1...."},
+          { name: "wen1"   , wave: "0......"},
+          { name: "wdata0" , wave: "-123456", node: "..c.", data: "0 1 2 3 4"},
+          { name: "wdata1" , wave: "-123456", node: "..d.", data: "0 1 2 3 4"},
           ],
           edge : [
-          "a~>b"]
+          "a~>b", "b~>c", "b~>d"]
         }
 
+Execute
+^^^^^^^
+
+After the instruction has been decoded and the register file prepared for reads (and possibly writes) the core knows whether it is a one-stage or two-stage instruction. These are handled differently and we will begin by looking at one-stage instructions. A stage in SERV is 32 consecutive cycles during which the core is active and processes inputs and creates results one bit at a time, starting with the LSB.
+
+One-stage instructions
+::::::::::::::::::::::
+
+Most operations are one-stage operations which finish in 32 cycles + fetch overhead. During a one-stage operation, the RF is read and written simultaneously as well as the PC which is increased by four to point to the next instruction. trap and init signals are low to distinguish from other stages.
+
+.. wavedrom::
+
+        { signal: [
+          { name: "clk"     , wave: "0P..|..."},
+          { name: "cnt_en"  , wave: "01..|..0", node: "...."},
+          { name: "init"    , wave: "0...|...", node: "....", data: "r0"},
+          { name: "trap"    , wave: "0...|...", node: "....", data: "r1"},
+          { name: "pc_en"   , wave: "01..|..0"},
+          { name: "rs1"     , wave: "x234|56x", node: "...", data: "0 1 ... 30 31"},
+          { name: "rs2"     , wave: "x234|56x", node: "...", data: "0 1 ... 30 31"},
+          { name: "imm"     , wave: "x234|56x", node: "...", data: "0 1 ... 30 31"},
+          { name: "rd"      , wave: "x234|56x", node: "...", data: "0 1 ... 30 31"},
+          ],
+          edge : [
+          "a~>b", "b~>c", "b~>d"]
+        }
+
+Interrupts and ecall/ebreak
+:::::::::::::::::::::::::::
+
+External timer interrupts and ecall/ebreak are also one-stage operations with some notable differences. The new PC is fetched from the MTVEC CSR and instead of writing to rd, the MEPC and MTVAL CSR registers are written. All this is handled by serv_state raising the trap signal during the instruction's execution.
+
+.. wavedrom::
+
+        { signal: [
+          { name: "clk"     , wave: "0P..|..."},
+          { name: "cnt_en"  , wave: "01..|..0", node: "...."},
+          { name: "init"    , wave: "0...|...", node: "....", data: "r0"},
+          { name: "trap"    , wave: "1...|...", node: "....", data: "r1"},
+          { name: "pc_en"   , wave: "01..|..0"},
+          { name: "rs1"     , wave: "x...|...", node: "...", data: "0 1 ... 30 31"},
+          { name: "rs2"     , wave: "x...|...", node: "...", data: "0 1 ... 30 31"},
+          { name: "imm"     , wave: "x...|...", node: "...", data: "0 1 ... 30 31"},
+          { name: "rd"      , wave: "x...|...", node: "...", data: "0 1 ... 30 31"},
+          ],
+          edge : [
+          "a~>b", "b~>c", "b~>d"]
+        }
+
+Two-stage operations
+::::::::::::::::::::
+
+Some operations need to be executed in two stages. In the first stage the operands are read out from the immediate and the rs1/rs2 registers and potential results are written to PC and rd in the second stage. Various things happen between the stages depending on the type of operation. SERV has types of four two-stage operations; memory, shift, slt and branch operations. In all cases the first stage is distinguished by having the init signal raised and only performing reads from the RF.
+
+.. wavedrom::
+
+        { signal: [
+          { name: "clk"     , wave: "0P..|..."},
+          { name: "cnt_en"  , wave: "01..|..0", node: "...."},
+          { name: "init"    , wave: "1...|..0", node: "....", data: "r0"},
+          { name: "trap"    , wave: "0...|...", node: "....", data: "r1"},
+          { name: "pc_en"   , wave: "0...|..."},
+          { name: "rs1"     , wave: "x234|56x", node: "...", data: "0 1 ... 30 31"},
+          { name: "rs2"     , wave: "x234|56x", node: "...", data: "0 1 ... 30 31"},
+          { name: "imm"     , wave: "x234|56x", node: "...", data: "0 1 ... 30 31"},
+          { name: "rd"      , wave: "x234|56x", node: "...", data: "0 1 ... 30 31"},
+          ],
+          edge : [
+          "a~>b", "b~>c", "b~>d"]
+        }
+
+
+memory
+++++++
+
+Loads and stores are memory operations. In the init stage, the data address to access is calculated, checked for alignment and stored in serv_bufreg. For stores, the data to write is also shifted into the data register in serv_mem_if.
+
+.. wavedrom::
+
+        { signal: [
+          { name: "clk"       , wave: "P..|..."},
+          { name: "trap"      , wave: "0..|...", node: "....", data: "r1"},
+          { name: "init"      , wave: "1.0|...", node: "....", data: "r0"},
+          { name: "cnt_en"    , wave: "1.0|.1.", node: ".....d"},
+          { name: "cnt_done"  , wave: "010|.1.", node: ".a...."},
+          { name: "o_dbus_cyc", wave: "0.1|.0.", node: "..b.", data: "0 1 ... 30 31"},
+          { name: "i_dbus_ack", wave: "0..|10.", node: "....c", data: "0 1 ... 30 31"},
+          { name: "o_dbus_adr", wave: "x.2|.x.", node: "...", data: "address"},
+          { name: "rs2"       , wave: "33x|...", node: ".e.", data: "d30 d31"},
+          { name: "o_dbus_dat", wave: "x.3|.x.", node: "..f", data: "data"},
+          { name: "o_dbus_sel", wave: "x.4|.x.", node: "...", data: ["write mask"]},
+          { name: "o_dbus_we" , wave: "1..|..."},
+          ],
+          edge : [
+          "a~>b", "b~>c", "c~>d", "e~>f"]
+        }
+
+If the address has correct alignment, the o_dbus_cyc signal is raised to signal an access on the data bus after the init stage has finished and waits for an incoming i_dbus_ack, and incoming data in case of loads. After an incoming ack, o_dbus_cyc is lowered and stage 2 begins. For stores, the only remaining work in stage 2 is to update the PC. For loads, the incoming data is shifted into rd.
+
+.. wavedrom::
+
+        { signal: [
+          { name: "clk"       , wave: "P..|..."},
+          { name: "trap"      , wave: "0..|...", node: "....", data: "r1"},
+          { name: "init"      , wave: "1.0|...", node: "....", data: "r0"},
+          { name: "cnt_en"    , wave: "1.0|.1.", node: ".....d"},
+          { name: "cnt_done"  , wave: "010|.1.", node: ".a...."},
+          { name: "o_dbus_cyc", wave: "0.1|.0.", node: "..b.", data: "0 1 ... 30 31"},
+          { name: "i_dbus_ack", wave: "0..|10.", node: "....c", data: "0 1 ... 30 31"},
+          { name: "o_dbus_adr", wave: "x.2|.x.", node: "...", data: "address"},
+          { name: "o_dbus_we" , wave: "0..|..."},
+          { name: "i_dbus_rdt", wave: "x..|3x.", node: "....e", data: "data"},
+          { name: "rd"        , wave: "x..|.33", node: ".....f", data: "d0 d1"},
+          ],
+          edge : [
+          "a~>b", "b~>c", "c~>d", "e~>f"]
+        }
+
+If the calculated address in the init stage was misaligned, SERV will raise a exception. Instead of performing an external bus access it will set mcause and raise the trap signal, which causes SERV to store the current PC to mepc, store misaligned address to mtval and set the new PC from mtvec which will enter the exception handler.
+
+.. wavedrom::
+
+        { signal: [
+          { name: "clk"       , wave: "P...."},
+          { name: "misalign"  , wave: "1....", node: "c..", data: ["write mask"]},
+          { name: "trap"      , wave: "0.1..", node: "..b.", data: "r1"},
+          { name: "init"      , wave: "1.0..", node: "....", data: "r0"},
+          { name: "cnt_en"    , wave: "1.01.", node: "...d"},
+          { name: "cnt_done"  , wave: "010..", node: ".a...."},
+          { name: "o_dbus_cyc", wave: "0....", node: "....", data: "0 1 ... 30 31"},
+          { name: "i_dbus_ack", wave: "0....", node: "....", data: "0 1 ... 30 31"},
+          ],
+          edge : [
+          "a~>b", "c~>b", "b~>d"]
+        }
