@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.1.0.post137"
-version_tuple = (1, 1, 0, 137)
+version_str = "1.1.0.post138"
+version_tuple = (1, 1, 0, 138)
 try:
     from packaging.version import Version as V
-    pversion = V("1.1.0.post137")
+    pversion = V("1.1.0.post138")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.1.0.post20"
-data_version_tuple = (1, 1, 0, 20)
+data_version_str = "1.1.0.post21"
+data_version_tuple = (1, 1, 0, 21)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.1.0.post20")
+    pdata_version = V("1.1.0.post21")
 except ImportError:
     pass
-data_git_hash = "28953fec4c02314f17f78c5666915a43851995fe"
-data_git_describe = "1.1.0-20-g28953fe"
+data_git_hash = "7765567cf1f717b7eccadca9c85b5e82e5f21616"
+data_git_describe = "1.1.0-21-g7765567"
 data_git_msg = """\
-commit 28953fec4c02314f17f78c5666915a43851995fe
+commit 7765567cf1f717b7eccadca9c85b5e82e5f21616
 Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Fri Oct 8 22:42:02 2021 +0200
+Date:   Wed Dec 29 00:17:00 2021 +0100
 
-    Simplify shift_op signal
+    Add missing gate on mem_rd with CSR disabled
 
 """
 
