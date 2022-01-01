@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.1.0.post140"
-version_tuple = (1, 1, 0, 140)
+version_str = "1.1.0.post141"
+version_tuple = (1, 1, 0, 141)
 try:
     from packaging.version import Version as V
-    pversion = V("1.1.0.post140")
+    pversion = V("1.1.0.post141")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.1.0.post23"
-data_version_tuple = (1, 1, 0, 23)
+data_version_str = "1.1.0.post24"
+data_version_tuple = (1, 1, 0, 24)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.1.0.post23")
+    pdata_version = V("1.1.0.post24")
 except ImportError:
     pass
-data_git_hash = "07193819972aed16e8474913dbbbee5e01570e58"
-data_git_describe = "1.1.0-23-g0719381"
+data_git_hash = "f04a510393585f0a68280c912ae568b2dccc11cf"
+data_git_describe = "1.1.0-24-gf04a510"
 data_git_msg = """\
-commit 07193819972aed16e8474913dbbbee5e01570e58
+commit f04a510393585f0a68280c912ae568b2dccc11cf
 Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Sat Jan 1 17:15:00 2022 +0100
+Date:   Sat Jan 1 22:43:43 2022 +0100
 
-    Add ViDBo support
+    Remove unused parameter from serv_mem_if
 
 """
 
