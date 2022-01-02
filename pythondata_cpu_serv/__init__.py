@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.1.0.post143"
-version_tuple = (1, 1, 0, 143)
+version_str = "1.1.0.post144"
+version_tuple = (1, 1, 0, 144)
 try:
     from packaging.version import Version as V
-    pversion = V("1.1.0.post143")
+    pversion = V("1.1.0.post144")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.1.0.post26"
-data_version_tuple = (1, 1, 0, 26)
+data_version_str = "1.1.0.post27"
+data_version_tuple = (1, 1, 0, 27)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.1.0.post26")
+    pdata_version = V("1.1.0.post27")
 except ImportError:
     pass
-data_git_hash = "aa8550b937f7d77f71011a985d23c9d154fd4588"
-data_git_describe = "1.1.0-26-gaa8550b"
+data_git_hash = "a121b19ec45599fa591884767a6bb468772a1c24"
+data_git_describe = "1.1.0-27-ga121b19"
 data_git_msg = """\
-commit aa8550b937f7d77f71011a985d23c9d154fd4588
+commit a121b19ec45599fa591884767a6bb468772a1c24
 Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Sun Jan 2 21:58:32 2022 +0100
+Date:   Sun Jan 2 23:52:07 2022 +0100
 
-    Remove doc for removed modules
+    Document shift operations
 
 """
 
