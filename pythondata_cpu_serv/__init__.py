@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.1.0.post141"
-version_tuple = (1, 1, 0, 141)
+version_str = "1.1.0.post143"
+version_tuple = (1, 1, 0, 143)
 try:
     from packaging.version import Version as V
-    pversion = V("1.1.0.post141")
+    pversion = V("1.1.0.post143")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.1.0.post24"
-data_version_tuple = (1, 1, 0, 24)
+data_version_str = "1.1.0.post26"
+data_version_tuple = (1, 1, 0, 26)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.1.0.post24")
+    pdata_version = V("1.1.0.post26")
 except ImportError:
     pass
-data_git_hash = "f04a510393585f0a68280c912ae568b2dccc11cf"
-data_git_describe = "1.1.0-24-gf04a510"
+data_git_hash = "aa8550b937f7d77f71011a985d23c9d154fd4588"
+data_git_describe = "1.1.0-26-gaa8550b"
 data_git_msg = """\
-commit f04a510393585f0a68280c912ae568b2dccc11cf
+commit aa8550b937f7d77f71011a985d23c9d154fd4588
 Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Sat Jan 1 22:43:43 2022 +0100
+Date:   Sun Jan 2 21:58:32 2022 +0100
 
-    Remove unused parameter from serv_mem_if
+    Remove doc for removed modules
 
 """
 
