@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.1.0.post144"
-version_tuple = (1, 1, 0, 144)
+version_str = "1.1.0.post145"
+version_tuple = (1, 1, 0, 145)
 try:
     from packaging.version import Version as V
-    pversion = V("1.1.0.post144")
+    pversion = V("1.1.0.post145")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.1.0.post27"
-data_version_tuple = (1, 1, 0, 27)
+data_version_str = "1.1.0.post28"
+data_version_tuple = (1, 1, 0, 28)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.1.0.post27")
+    pdata_version = V("1.1.0.post28")
 except ImportError:
     pass
-data_git_hash = "a121b19ec45599fa591884767a6bb468772a1c24"
-data_git_describe = "1.1.0-27-ga121b19"
+data_git_hash = "e59fe5346aabc555b8ed21b4e09eb14015340e6b"
+data_git_describe = "1.1.0-28-ge59fe53"
 data_git_msg = """\
-commit a121b19ec45599fa591884767a6bb468772a1c24
+commit e59fe5346aabc555b8ed21b4e09eb14015340e6b
 Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Sun Jan 2 23:52:07 2022 +0100
+Date:   Mon Jan 3 18:12:48 2022 +0100
 
-    Document shift operations
+    Refactor docs and add interface documentation
 
 """
 
