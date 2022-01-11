@@ -4,30 +4,32 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.1.0.post146"
-version_tuple = (1, 1, 0, 146)
+version_str = "1.1.0.post147"
+version_tuple = (1, 1, 0, 147)
 try:
     from packaging.version import Version as V
-    pversion = V("1.1.0.post146")
+    pversion = V("1.1.0.post147")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.1.0.post28"
-data_version_tuple = (1, 1, 0, 28)
+data_version_str = "1.1.0.post29"
+data_version_tuple = (1, 1, 0, 29)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.1.0.post28")
+    pdata_version = V("1.1.0.post29")
 except ImportError:
     pass
-data_git_hash = "e59fe5346aabc555b8ed21b4e09eb14015340e6b"
-data_git_describe = "1.1.0-28-ge59fe53"
+data_git_hash = "7624365325d037cffad613cb9435818c55c5ea2f"
+data_git_describe = "1.1.0-29-g7624365"
 data_git_msg = """\
-commit e59fe5346aabc555b8ed21b4e09eb14015340e6b
-Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Mon Jan 3 18:12:48 2022 +0100
+commit 7624365325d037cffad613cb9435818c55c5ea2f
+Author: somhi <somhi@users.noreply.github.com>
+Date:   Tue Jan 11 22:54:45 2022 +0100
 
-    Refactor docs and add interface documentation
+    chameleon96 board support added (#74)
+    
+    * chameleon96 board added
 
 """
 
