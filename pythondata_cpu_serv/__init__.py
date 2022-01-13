@@ -4,32 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.1.0.post151"
-version_tuple = (1, 1, 0, 151)
+version_str = "1.1.0.post152"
+version_tuple = (1, 1, 0, 152)
 try:
     from packaging.version import Version as V
-    pversion = V("1.1.0.post151")
+    pversion = V("1.1.0.post152")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.1.0.post29"
-data_version_tuple = (1, 1, 0, 29)
+data_version_str = "1.1.0.post30"
+data_version_tuple = (1, 1, 0, 30)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.1.0.post29")
+    pdata_version = V("1.1.0.post30")
 except ImportError:
     pass
-data_git_hash = "7624365325d037cffad613cb9435818c55c5ea2f"
-data_git_describe = "1.1.0-29-g7624365"
+data_git_hash = "09e49f784a44377e3f9f28fca85c77ab163e03a5"
+data_git_describe = "1.1.0-30-g09e49f7"
 data_git_msg = """\
-commit 7624365325d037cffad613cb9435818c55c5ea2f
-Author: somhi <somhi@users.noreply.github.com>
-Date:   Tue Jan 11 22:54:45 2022 +0100
+commit 09e49f784a44377e3f9f28fca85c77ab163e03a5
+Author: somhi <somhix@gmail.com>
+Date:   Thu Jan 13 22:39:27 2022 +0100
 
-    chameleon96 board support added (#74)
-    
-    * chameleon96 board added
+    added board_device_index : 2 to chameleon96 for programming
 
 """
 
