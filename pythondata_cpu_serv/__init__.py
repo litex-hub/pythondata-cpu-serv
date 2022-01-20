@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.1.0.post152"
-version_tuple = (1, 1, 0, 152)
+version_str = "1.1.0.post153"
+version_tuple = (1, 1, 0, 153)
 try:
     from packaging.version import Version as V
-    pversion = V("1.1.0.post152")
+    pversion = V("1.1.0.post153")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.1.0.post30"
-data_version_tuple = (1, 1, 0, 30)
+data_version_str = "1.1.0.post31"
+data_version_tuple = (1, 1, 0, 31)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.1.0.post30")
+    pdata_version = V("1.1.0.post31")
 except ImportError:
     pass
-data_git_hash = "09e49f784a44377e3f9f28fca85c77ab163e03a5"
-data_git_describe = "1.1.0-30-g09e49f7"
+data_git_hash = "b74344bb480a391e2642f4a1383015ded4133c85"
+data_git_describe = "1.1.0-31-gb74344b"
 data_git_msg = """\
-commit 09e49f784a44377e3f9f28fca85c77ab163e03a5
-Author: somhi <somhix@gmail.com>
-Date:   Thu Jan 13 22:39:27 2022 +0100
+commit b74344bb480a391e2642f4a1383015ded4133c85
+Author: Olof Kindgren <olof.kindgren@gmail.com>
+Date:   Thu Jan 20 23:46:48 2022 +0100
 
-    added board_device_index : 2 to chameleon96 for programming
+    Store GDS file as artifact after OpenLANE build
 
 """
 
