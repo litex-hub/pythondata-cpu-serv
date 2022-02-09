@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.1.0.post155"
-version_tuple = (1, 1, 0, 155)
+version_str = "1.1.0.post156"
+version_tuple = (1, 1, 0, 156)
 try:
     from packaging.version import Version as V
-    pversion = V("1.1.0.post155")
+    pversion = V("1.1.0.post156")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.1.0.post31"
-data_version_tuple = (1, 1, 0, 31)
+data_version_str = "1.1.0.post32"
+data_version_tuple = (1, 1, 0, 32)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.1.0.post31")
+    pdata_version = V("1.1.0.post32")
 except ImportError:
     pass
-data_git_hash = "b74344bb480a391e2642f4a1383015ded4133c85"
-data_git_describe = "1.1.0-31-gb74344b"
+data_git_hash = "2bb988b553b810f4be64d07b036da12d84c57d35"
+data_git_describe = "1.1.0-32-g2bb988b"
 data_git_msg = """\
-commit b74344bb480a391e2642f4a1383015ded4133c85
+commit 2bb988b553b810f4be64d07b036da12d84c57d35
 Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Thu Jan 20 23:46:48 2022 +0100
+Date:   Wed Feb 9 18:15:08 2022 +0100
 
-    Store GDS file as artifact after OpenLANE build
+    Add reset for mie_mtie
 
 """
 
