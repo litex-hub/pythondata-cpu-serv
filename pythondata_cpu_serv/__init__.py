@@ -4,11 +4,11 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.1.0.post156"
-version_tuple = (1, 1, 0, 156)
+version_str = "1.1.0.post158"
+version_tuple = (1, 1, 0, 158)
 try:
     from packaging.version import Version as V
-    pversion = V("1.1.0.post156")
+    pversion = V("1.1.0.post158")
 except ImportError:
     pass
 
@@ -32,11 +32,11 @@ Date:   Wed Feb 9 18:15:08 2022 +0100
 """
 
 # Tool version info
-tool_version_str = "0.0.post124"
-tool_version_tuple = (0, 0, 124)
+tool_version_str = "0.0.post126"
+tool_version_tuple = (0, 0, 126)
 try:
     from packaging.version import Version as V
-    ptool_version = V("0.0.post124")
+    ptool_version = V("0.0.post126")
 except ImportError:
     pass
 
