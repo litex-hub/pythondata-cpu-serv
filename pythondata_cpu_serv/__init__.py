@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.1.0.post158"
-version_tuple = (1, 1, 0, 158)
+version_str = "1.1.0.post159"
+version_tuple = (1, 1, 0, 159)
 try:
     from packaging.version import Version as V
-    pversion = V("1.1.0.post158")
+    pversion = V("1.1.0.post159")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.1.0.post32"
-data_version_tuple = (1, 1, 0, 32)
+data_version_str = "1.1.0.post33"
+data_version_tuple = (1, 1, 0, 33)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.1.0.post32")
+    pdata_version = V("1.1.0.post33")
 except ImportError:
     pass
-data_git_hash = "2bb988b553b810f4be64d07b036da12d84c57d35"
-data_git_describe = "1.1.0-32-g2bb988b"
+data_git_hash = "7d08abb92d405b9416f9d7a77fdaba8ba0f52acb"
+data_git_describe = "1.1.0-33-g7d08abb"
 data_git_msg = """\
-commit 2bb988b553b810f4be64d07b036da12d84c57d35
+commit 7d08abb92d405b9416f9d7a77fdaba8ba0f52acb
 Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Wed Feb 9 18:15:08 2022 +0100
+Date:   Wed Mar 9 20:59:53 2022 +0100
 
-    Add reset for mie_mtie
+    Improve makehex.py
 
 """
 
