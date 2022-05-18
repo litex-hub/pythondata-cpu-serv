@@ -4,41 +4,41 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.1.0.post160"
-version_tuple = (1, 1, 0, 160)
+version_str = "1.1.0.post163"
+version_tuple = (1, 1, 0, 163)
 try:
     from packaging.version import Version as V
-    pversion = V("1.1.0.post160")
+    pversion = V("1.1.0.post163")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.1.0.post34"
-data_version_tuple = (1, 1, 0, 34)
+data_version_str = "1.1.0.post35"
+data_version_tuple = (1, 1, 0, 35)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.1.0.post34")
+    pdata_version = V("1.1.0.post35")
 except ImportError:
     pass
-data_git_hash = "2df592340f43a4a2951362960909863812bb8c1f"
-data_git_describe = "1.1.0-34-g2df5923"
+data_git_hash = "4ddd154b249f46522f164aa9a49cce3edfafe03c"
+data_git_describe = "1.1.0-35-g4ddd154"
 data_git_msg = """\
-commit 2df592340f43a4a2951362960909863812bb8c1f
-Author: Usman <32096123+usmnzain@users.noreply.github.com>
-Date:   Wed Apr 13 10:48:58 2022 +0500
+commit 4ddd154b249f46522f164aa9a49cce3edfafe03c
+Author: Wadood <82087831+Abdulwadoodd@users.noreply.github.com>
+Date:   Tue May 17 12:11:56 2022 +0500
 
-    Compliance update
+    Nexys 2 Board support
     
-    Updated serv to support latest version of riscv-arch-test (v2.6.1)
+    Added nexys 2 target support for servant
 
 """
 
 # Tool version info
-tool_version_str = "0.0.post126"
-tool_version_tuple = (0, 0, 126)
+tool_version_str = "0.0.post128"
+tool_version_tuple = (0, 0, 128)
 try:
     from packaging.version import Version as V
-    ptool_version = V("0.0.post126")
+    ptool_version = V("0.0.post128")
 except ImportError:
     pass
 
