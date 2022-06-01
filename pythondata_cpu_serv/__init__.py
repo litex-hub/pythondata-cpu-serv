@@ -4,32 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.1.0.post177"
-version_tuple = (1, 1, 0, 177)
+version_str = "1.1.0.post178"
+version_tuple = (1, 1, 0, 178)
 try:
     from packaging.version import Version as V
-    pversion = V("1.1.0.post177")
+    pversion = V("1.1.0.post178")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.1.0.post35"
-data_version_tuple = (1, 1, 0, 35)
+data_version_str = "1.1.0.post36"
+data_version_tuple = (1, 1, 0, 36)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.1.0.post35")
+    pdata_version = V("1.1.0.post36")
 except ImportError:
     pass
-data_git_hash = "4ddd154b249f46522f164aa9a49cce3edfafe03c"
-data_git_describe = "1.1.0-35-g4ddd154"
+data_git_hash = "2655861447054d37b032795dcedc0fecf1d49dc3"
+data_git_describe = "1.1.0-36-g2655861"
 data_git_msg = """\
-commit 4ddd154b249f46522f164aa9a49cce3edfafe03c
-Author: Wadood <82087831+Abdulwadoodd@users.noreply.github.com>
-Date:   Tue May 17 12:11:56 2022 +0500
+commit 2655861447054d37b032795dcedc0fecf1d49dc3
+Author: Abd <abdulwadood.afzal88@gmail.com>
+Date:   Wed Mar 23 15:21:58 2022 +0500
 
-    Nexys 2 Board support
-    
-    Added nexys 2 target support for servant
+    Compressed Extension for SERV
 
 """
 
