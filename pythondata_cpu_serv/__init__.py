@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.1.0.post180"
-version_tuple = (1, 1, 0, 180)
+version_str = "1.1.0.post183"
+version_tuple = (1, 1, 0, 183)
 try:
     from packaging.version import Version as V
-    pversion = V("1.1.0.post180")
+    pversion = V("1.1.0.post183")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.1.0.post38"
-data_version_tuple = (1, 1, 0, 38)
+data_version_str = "1.1.0.post41"
+data_version_tuple = (1, 1, 0, 41)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.1.0.post38")
+    pdata_version = V("1.1.0.post41")
 except ImportError:
     pass
-data_git_hash = "a8f7de9e8c57227fcd187a685193148094bd3fc0"
-data_git_describe = "1.1.0-38-ga8f7de9"
+data_git_hash = "302224834b40d8d46bb451e9f991e337d10ce69d"
+data_git_describe = "1.1.0-41-g3022248"
 data_git_msg = """\
-commit a8f7de9e8c57227fcd187a685193148094bd3fc0
-Author: Abd <abdulwadood.afzal88@gmail.com>
-Date:   Tue May 31 03:36:35 2022 +0500
+commit 302224834b40d8d46bb451e9f991e337d10ce69d
+Author: Inoki <veyx.shaw@gmail.com>
+Date:   Sat Mar 19 14:14:32 2022 +0100
 
-    compressed parameter added for Nexys-2 FPGA target
+    Add description for AX309 board target
 
 """
 
