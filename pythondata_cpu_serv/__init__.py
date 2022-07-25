@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.1.0.post183"
-version_tuple = (1, 1, 0, 183)
+version_str = "1.1.0.post188"
+version_tuple = (1, 1, 0, 188)
 try:
     from packaging.version import Version as V
-    pversion = V("1.1.0.post183")
+    pversion = V("1.1.0.post188")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.1.0.post41"
-data_version_tuple = (1, 1, 0, 41)
+data_version_str = "1.1.0.post46"
+data_version_tuple = (1, 1, 0, 46)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.1.0.post41")
+    pdata_version = V("1.1.0.post46")
 except ImportError:
     pass
-data_git_hash = "302224834b40d8d46bb451e9f991e337d10ce69d"
-data_git_describe = "1.1.0-41-g3022248"
+data_git_hash = "efe8ba832a9ad29bc85bd1ea8e3050160c3499e5"
+data_git_describe = "1.1.0-46-gefe8ba8"
 data_git_msg = """\
-commit 302224834b40d8d46bb451e9f991e337d10ce69d
-Author: Inoki <veyx.shaw@gmail.com>
-Date:   Sat Mar 19 14:14:32 2022 +0100
+commit efe8ba832a9ad29bc85bd1ea8e3050160c3499e5
+Author: Olof Kindgren <olof.kindgren@gmail.com>
+Date:   Mon Jul 25 23:24:29 2022 +0200
 
-    Add description for AX309 board target
+    Set up Github CI testing matrix for compliance tests
 
 """
 
