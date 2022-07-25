@@ -90,7 +90,7 @@ To build the verilator model with C extension (for Compressed extension complian
 
 Download the tests repo
 
-    git clone https://github.com/riscv-non-isa/riscv-arch-test.git
+    git clone --branch 2.7.4 https://github.com/riscv-non-isa/riscv-arch-test.git
 
 To run the RISC-V compliance tests, we need to supply the SERV-specific support files and point the test suite to where it can find a target to run (i.e. the previously built Verilator model)
 
@@ -128,6 +128,14 @@ Pin A6 is used for UART output with 115200 baud rate.
 Pin 9 is used for UART output with 57600 baud rate.
 
     fusesoc run --target=icebreaker servant
+
+### Nexys 2
+
+Pmod pin JA1 is conntected to UART tx with 57600 baud rate. A USB to TTL connector is used to display to hello world message on the serial monitor. 
+(To use blinky.hex change L15 to J14 (led[0]) in data/nexys_2.ucf).
+
+    fusesoc run --target=nexys_2_500 servant --uart_baudrate=57600 --firmware=$SERV/sw/zephyr_hello.hex
+
 
 ### iCESugar
 
