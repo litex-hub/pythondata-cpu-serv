@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.1.0.post188"
-version_tuple = (1, 1, 0, 188)
+version_str = "1.2.0.post142"
+version_tuple = (1, 2, 0, 142)
 try:
     from packaging.version import Version as V
-    pversion = V("1.1.0.post188")
+    pversion = V("1.2.0.post142")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.1.0.post46"
-data_version_tuple = (1, 1, 0, 46)
+data_version_str = "1.2.0.post0"
+data_version_tuple = (1, 2, 0, 0)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.1.0.post46")
+    pdata_version = V("1.2.0.post0")
 except ImportError:
     pass
-data_git_hash = "efe8ba832a9ad29bc85bd1ea8e3050160c3499e5"
-data_git_describe = "1.1.0-46-gefe8ba8"
+data_git_hash = "cb4276e8b23c761389e70221e5cf0bf5ae3ccb91"
+data_git_describe = "1.2.0-0-gcb4276e"
 data_git_msg = """\
-commit efe8ba832a9ad29bc85bd1ea8e3050160c3499e5
+commit cb4276e8b23c761389e70221e5cf0bf5ae3ccb91
 Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Mon Jul 25 23:24:29 2022 +0200
+Date:   Tue Jul 26 01:19:28 2022 +0200
 
-    Set up Github CI testing matrix for compliance tests
+    Prepare for release
 
 """
 
