@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "verilog")
 src = "https://github.com/olofk/serv"
 
 # Module version
-version_str = "1.2.0.post142"
-version_tuple = (1, 2, 0, 142)
+version_str = "1.2.0.post143"
+version_tuple = (1, 2, 0, 143)
 try:
     from packaging.version import Version as V
-    pversion = V("1.2.0.post142")
+    pversion = V("1.2.0.post143")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "1.2.0.post0"
-data_version_tuple = (1, 2, 0, 0)
+data_version_str = "1.2.0.post1"
+data_version_tuple = (1, 2, 0, 1)
 try:
     from packaging.version import Version as V
-    pdata_version = V("1.2.0.post0")
+    pdata_version = V("1.2.0.post1")
 except ImportError:
     pass
-data_git_hash = "cb4276e8b23c761389e70221e5cf0bf5ae3ccb91"
-data_git_describe = "1.2.0-0-gcb4276e"
+data_git_hash = "5cc7b0cbe19ae9b02e3c778b5d2f9cb75b9d9eb4"
+data_git_describe = "1.2.0-1-g5cc7b0c"
 data_git_msg = """\
-commit cb4276e8b23c761389e70221e5cf0bf5ae3ccb91
-Author: Olof Kindgren <olof.kindgren@gmail.com>
-Date:   Tue Jul 26 01:19:28 2022 +0200
+commit 5cc7b0cbe19ae9b02e3c778b5d2f9cb75b9d9eb4
+Author: Eric Brombaugh <ebrombaugh1@cox.net>
+Date:   Mon Aug 8 12:17:56 2022 -0700
 
-    Prepare for release
+    Guarantee at least 2 cycles of o_rst after PLL locked.
 
 """
 
